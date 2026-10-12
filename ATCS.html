@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSCE Multi-Agent Simulator - ĐHYD TP.HCM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        .typing-dot { animation: typing 1s infinite ease-in-out; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased">
+
+    <!-- HEADER -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center text-xl font-bold shadow-md">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg text-slate-900 leading-tight">OSCE Multi-Agent Simulation</h1>
+                    <p class="text-xs text-slate-500 font-medium">Trung tâm Huấn luyện Kỹ năng Lâm sàng (ATCS) - ĐHYD TP.HCM</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="openApiKeyModal()" class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition text-slate-700 cursor-pointer">
+                    <i class="fa-solid fa-key text-amber-500"></i>
+                    <span id="api-status-text">Cấu hình Gemini API</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTAINER CHÍNH -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-6 flex flex-col">
+
+        <!-- MÀN HÌNH 1: HOME -->
+        <section id="screen-home" class="space-y-6 flex-1">
+            <div class="bg-gradient-to-r from-teal-800 via-teal-700 to-cyan-800 text-white p-6 sm:p-8 rounded-2xl shadow-lg relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-teal-500/30 text-teal-100 text-xs uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border border-teal-400/30">Mô phỏng lâm sàng tương tác 3 bên</span>
+                    <h2 class="text-2xl sm:text-3xl font-black mt-3 mb-2">Trạm Thi OSCE Tích Hợp Bệnh Nhân Ảo</h2>
+                    <p class="text-teal-100 text-sm sm:text-base leading-relaxed">
+                        Hệ thống tự động sinh hồ sơ bệnh nhân, bệnh cảnh và <strong>Y lệnh thuốc (Thuốc ống, Thuốc lọ dung dịch, Lọ bột pha tiêm)</strong>. Bảng kiểm sẽ tự động thích ứng với quy trình rút/pha từng dạng thuốc cụ thể!
+                    </p>
+                </div>
+                <i class="fa-solid fa-stethoscope text-white/10 absolute right-6 bottom-2 text-9xl pointer-events-none"></i>
+            </div>
+
+            <div id="category-list" class="space-y-8"></div>
+        </section>
+
+        <!-- MÀN HÌNH 2: PHÒNG THI CHAT -->
+        <section id="screen-practice" class="flex-1 flex-col h-[calc(100vh-6.5rem)] max-h-[850px] bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" style="display: none;">
+            <!-- Top bar -->
+            <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <div>
+                        <span id="practice-skill-category" class="text-[11px] font-bold text-teal-600 uppercase tracking-wide">Nhóm kỹ năng</span>
+                        <h3 id="practice-skill-title" class="font-bold text-slate-900 text-sm sm:text-base leading-snug">Tên kỹ năng</h3>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div id="timer-box" class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-300 font-mono font-bold text-sm sm:text-base text-slate-700 shadow-xs">
+                        <i class="fa-regular fa-clock text-teal-600"></i>
+                        <span id="timer-display">06:00</span>
+                    </div>
+                    <button type="button" onclick="openFinishConfirmModal()" class="bg-rose-600 hover:bg-rose-700 active:scale-95 text-white text-xs sm:text-sm font-bold px-3.5 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-flag-checkered"></i> <span>Nộp bài</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Banner Hồ Sơ Bệnh Nhân & Y Lệnh Thuốc -->
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50/70 border-b border-amber-200/90 px-4 py-2.5 text-xs text-amber-950 shrink-0 space-y-1.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-2 py-0.5 rounded-md bg-amber-200/80 font-bold text-amber-900 text-[11px] flex items-center gap-1">
+                            <i class="fa-solid fa-bed-pulse"></i> <span id="patient-badge-info">Đang tải hồ sơ...</span>
+                        </span>
+                        <span class="text-slate-600 text-[11px] flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot text-rose-500"></i> <strong id="patient-address">...</strong>
+                        </span>
+                        <span class="text-slate-400">•</span>
+                        <span class="text-slate-600 text-[11px] flex items-center gap-1">
+                            <i class="fa-solid fa-briefcase text-slate-500"></i> <strong id="patient-occupation">...</strong>
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="patient-chronic-badge" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">Bệnh mạn tính: Không</span>
+                        <span id="patient-allergy-badge" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">Dị ứng: Không</span>
+                    </div>
+                </div>
+
+                <!-- Thẻ Y Lệnh Thuốc (nếu là trạm tiêm) -->
+                <div id="medication-order-banner" class="hidden p-2 bg-teal-50 border border-teal-200 rounded-lg flex flex-wrap items-center justify-between gap-2 text-teal-950">
+                    <div class="flex items-center gap-2 font-medium">
+                        <span class="px-2 py-0.5 rounded bg-teal-600 text-white font-bold text-[10px] uppercase tracking-wide">Y Lệnh Bác Sĩ</span>
+                        <span id="medication-name-dose" class="font-bold text-teal-900">...</span>
+                        <span id="medication-type-badge" class="px-1.5 py-0.5 rounded text-[10px] bg-teal-100 text-teal-800 font-semibold border border-teal-300">...</span>
+                    </div>
+                    <div class="text-[11px] text-teal-700 italic" id="medication-prep-hint">
+                        💡 Lưu ý quy trình chuẩn bị thuốc tương ứng với dạng bào chế trên.
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600 pt-0.5 border-t border-amber-100/80">
+                    <div class="truncate max-w-2xl">
+                        <strong class="text-slate-700">Bệnh cảnh:</strong> <span id="practice-scenario">Đang khởi tạo tình huống...</span>
+                    </div>
+                    <span id="patient-psychology" class="italic text-slate-500"></span>
+                </div>
+            </div>
+
+            <!-- Khung Chat -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 custom-scroll bg-slate-50/40"></div>
+
+            <!-- Typing indicator -->
+            <div id="typing-indicator" class="hidden px-5 py-2 shrink-0">
+                <div class="inline-flex items-center gap-1.5 bg-slate-200/80 text-slate-600 px-3.5 py-2 rounded-2xl rounded-bl-xs text-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500 typing-dot"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500 typing-dot"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500 typing-dot"></span>
+                    <span id="typing-label" class="ml-1 text-[11px] font-medium">Bệnh nhân và Giám khảo đang phản hồi...</span>
+                </div>
+            </div>
+
+            <!-- Thanh nhập tin nhắn -->
+            <div class="p-3 sm:p-4 bg-white border-t border-slate-200 shrink-0">
+                <form id="chat-form" onsubmit="handleSendMessage(event)" class="flex items-center gap-2">
+                    <input 
+                        type="text" 
+                        id="user-input" 
+                        placeholder="Chào hỏi, kiểm tra 5 đúng, mô tả thao tác kỹ thuật hoặc tương tác bệnh nhân..." 
+                        autocomplete="off"
+                        class="flex-1 border border-slate-300 rounded-xl px-4 py-2.5 sm:py-3 text-sm focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition bg-slate-50/50"
+                    />
+                    <button 
+                        type="submit" 
+                        id="btn-send"
+                        class="bg-teal-600 hover:bg-teal-700 text-white w-11 h-10 sm:w-12 sm:h-11 rounded-xl flex items-center justify-center transition shadow-xs disabled:opacity-50 cursor-pointer">
+                        <i class="fa-solid fa-paper-plane text-sm"></i>
+                    </button>
+                </form>
+                <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2 px-1">
+                    <span>💡 Gợi ý: Hãy chào hỏi, hỏi tiền căn dị ứng/bệnh mạn tính và làm đúng trình tự bảng kiểm.</span>
+                    <span id="step-progress-counter" class="font-semibold text-teal-700">Đã ghi nhận: 0 bước</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- MÀN HÌNH 3: BẢNG KẾT QUẢ -->
+        <section id="screen-result" class="space-y-6" style="display: none;">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-2 text-center md:text-left">
+                        <span id="result-status-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-teal-100 text-teal-800">Đạt yêu cầu</span>
+                        <h2 id="result-skill-title" class="text-2xl font-black text-slate-900">Bảng Điểm Kỹ Năng OSCE</h2>
+                        <p id="result-feedback-summary" class="text-sm text-slate-600 max-w-xl"></p>
+                    </div>
+                    
+                    <div class="flex items-center gap-6 bg-slate-50 p-4 px-6 rounded-2xl border border-slate-100 text-center">
+                        <div>
+                            <span class="block text-4xl font-extrabold text-teal-600" id="result-score-percent">0%</span>
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Điểm chuẩn hoá</span>
+                        </div>
+                        <div class="w-px h-10 bg-slate-200"></div>
+                        <div>
+                            <span class="block text-2xl font-bold text-slate-800" id="result-time-taken">--:--</span>
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Thời gian làm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-100">
+                    <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center">
+                        <span class="block text-xl font-bold text-emerald-600" id="stat-correct-order">0</span>
+                        <span class="text-xs font-medium text-emerald-800">Đúng chuẩn tự</span>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl text-center">
+                        <span class="block text-xl font-bold text-amber-600" id="stat-wrong-order">0</span>
+                        <span class="text-xs font-medium text-amber-800">Sai thứ tự</span>
+                    </div>
+                    <div class="bg-rose-50 border border-rose-100 p-3 rounded-xl text-center">
+                        <span class="block text-xl font-bold text-rose-600" id="stat-missed">0</span>
+                        <span class="text-xs font-medium text-rose-800">Bỏ sót bước</span>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-100 p-3 rounded-xl text-center">
+                        <span class="block text-xl font-bold text-purple-600" id="stat-errors">0</span>
+                        <span class="text-xs font-medium text-purple-800">Lỗi sai / Phạm quy</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng kiểm chi tiết -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-teal-600"></i> Bảng kiểm đối chiếu chi tiết (Checklist)
+                </h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-600 text-xs uppercase border-b border-slate-200 font-bold">
+                            <tr>
+                                <th class="py-3 px-4 w-12 text-center">#</th>
+                                <th class="py-3 px-4">Bước chuẩn theo quy trình</th>
+                                <th class="py-3 px-4 w-36">Đánh giá</th>
+                                <th class="py-3 px-4">Chi tiết thao tác bạn đã thực hiện</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailed-checklist-body" class="divide-y divide-slate-100 font-normal"></tbody>
+                    </table>
+                </div>
+
+                <div id="error-report-container" class="mt-4 p-4 rounded-xl bg-rose-50 border border-rose-200 hidden space-y-2">
+                    <h4 class="font-bold text-rose-800 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Các can thiệp sai / không phù hợp ghi nhận trong quá trình thi:
+                    </h4>
+                    <ul id="error-list" class="list-disc list-inside space-y-1 text-sm text-rose-900 pl-2"></ul>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pb-8">
+                <button type="button" onclick="navigateHome()" class="px-5 py-2.5 rounded-lg border border-slate-300 font-semibold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+                    <i class="fa-solid fa-house"></i> Về danh mục trạm
+                </button>
+                <button type="button" onclick="retryCurrentSkill()" class="px-5 py-2.5 rounded-lg bg-teal-600 font-semibold text-white hover:bg-teal-700 transition shadow-xs cursor-pointer">
+                    <i class="fa-solid fa-rotate-right"></i> Thực hành lại (Tình huống mới)
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL XÁC NHẬN NỘP BÀI -->
+    <div id="confirm-finish-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
+            <div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-flag-checkered"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-slate-900 text-lg">Xác nhận nộp bài?</h3>
+                <p class="text-xs text-slate-500 mt-1">Hệ thống sẽ dừng đồng hồ, tổng hợp các bước bạn đã hoàn thành và chấm điểm theo bảng kiểm OSCE.</p>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button type="button" onclick="closeFinishConfirmModal()" class="flex-1 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition cursor-pointer">
+                    Tiếp tục làm bài
+                </button>
+                <button type="button" onclick="executeFinishExam()" class="flex-1 px-4 py-2.5 text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition shadow-xs cursor-pointer">
+                    Nộp bài ngay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CẤU HÌNH API KEY -->
+    <div id="api-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-key text-amber-500"></i> Cấu hình Gemini API
+                </h3>
+                <button type="button" onclick="closeApiKeyModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Nhập Gemini API Key để kích hoạt AI tạo bệnh nhân sống động, tự sinh tình huống ngẫu nhiên và đóng vai 3 bên trong phòng thi.
+            </p>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-wider">Gemini API Key</label>
+                <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
+            </div>
+            <div class="text-[11px] text-slate-500 italic">
+                * Nếu để trống, hệ thống sử dụng bộ <strong>Trình tạo tình huống & Keyword Matcher Offline</strong> tự động.
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeApiKeyModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer">Đóng</button>
+                <button type="button" onclick="saveApiKey()" class="px-4 py-2 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-lg cursor-pointer">Lưu cấu hình</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        function safeParseJSON(str) {
+            if (!str) return null;
+            try {
+                const cleaned = str.replace(/```json/gi, '').replace(/```/g, '').trim();
+                return JSON.parse(cleaned);
+            } catch (e) {
+                console.warn("Lỗi phân tích JSON từ AI:", e, str);
+                return null;
+            }
+        }
+
+        const medicationOrdersDatabase = {
+            tiem_bap: [
+                { drug_name: "Ceftriaxone 1g", form_type: "powder_vial", form_name: "Lọ thuốc bột pha tiêm", dose: "1g (pha với 3.5ml Lidocain 1% hoặc Nước cất)", route: "Tiêm bắp sâu (IM)", instructions: "Pha loãng lọ bột bằng dung môi, lắc tan hoàn toàn trước khi rút tiêm." },
+                { drug_name: "Spasfon (Phloroglucinol)", form_type: "ampoule", form_name: "Thuốc ống (dung dịch nước)", dose: "40mg / 4ml (1 ống)", route: "Tiêm bắp sâu (IM)", instructions: "Gõ nhẹ đầu ống, lót gạc bẻ ống và rút thuốc trực tiếp." }
+            ],
+            tiem_tinh_mach: [
+                { drug_name: "Omeprazole", form_type: "powder_vial", form_name: "Lọ thuốc bột pha tiêm", dose: "40mg (pha với 10ml NaCl 0.9%)", route: "Tiêm tĩnh mạch chậm (IV)", instructions: "Bơm 10ml NaCl 0.9% vào lọ bột, lắc đều tan trong suốt rồi rút lại bơm tiêm." },
+                { drug_name: "Furosemid (Lasix)", form_type: "ampoule", form_name: "Thuốc ống (dung dịch nước)", dose: "20mg / 2ml (1 ống)", route: "Tiêm tĩnh mạch chậm (IV)", instructions: "Lót gạc bẻ ống thuốc, rút trọn 2ml tiêm tĩnh mạch chậm trong 2 phút." }
+            ],
+            tiem_duoi_da: [
+                { drug_name: "Insulin Mixtard 30/70", form_type: "liquid_vial", form_name: "Lọ thuốc (dung dịch/hỗn dịch nước)", dose: "10 UI", route: "Tiêm dưới da (SC)", instructions: "Lăn nhẹ lọ thuốc trong lòng bàn tay, sát khuẩn nút cao su, bơm 10 UI khí vào lọ rồi rút 10 UI thuốc." }
+            ],
+            tiem_trong_da: [
+                { drug_name: "Dung dịch Penicillin / Ceftriaxone thử phản ứng", form_type: "powder_vial", form_name: "Lọ thuốc bột pha nồng độ test", dose: "0.1 ml (nồng độ thử phản ứng)", route: "Tiêm trong da (ID - Test nội bì)", instructions: "Pha loãng lọ bột theo bậc test, dùng bơm tiêm 1ml rút đúng 0.1ml dung dịch thử." }
+            ]
+        };
+
+        const skillsData = {
+            categories: [
+                {
+                    id: "injection",
+                    title: "1. Kỹ năng tiêm thuốc (Checklist động theo dạng thuốc)",
+                    skills: [
+                        {
+                            id: "tiem_bap",
+                            name: "Tiêm bắp (IM - Cơ delta / 1/4 trên ngoài mông)",
+                            prompt_context: "Quy trình tiêm bắp sâu theo y lệnh thuốc ống hoặc thuốc lọ bột/nước.",
+                            base_checklist: [
+                                { step_id: 1, standard_action: "Đối chiếu người bệnh và kiểm tra 5 đúng theo y lệnh", required_keywords: ["đối chiếu", "5 đúng", "tên", "thuốc", "liều", "đường tiêm", "thời điểm"], clarification_prompt: "Bạn thực hiện đối chiếu và kiểm tra y lệnh như thế nào?" },
+                                { step_id: 2, standard_action: "Vệ sinh tay thường quy và mang khẩu trang", required_keywords: ["vệ sinh tay", "rửa tay", "khẩu trang"], clarification_prompt: "Trước khi chuẩn bị thuốc, bạn xử lý tay và khẩu trang thế nào?" },
+                                { step_id: 6, standard_action: "Đuổi hết bọt khí và thay kim tiêm phù hợp", required_keywords: ["đuổi khí", "bọt khí", "thay kim"], clarification_prompt: "Trước khi đến bên người bệnh, bạn xử lý bọt khí và kim tiêm ra sao?" },
+                                { step_id: 7, standard_action: "Xác định chính xác vị trí tiêm bắp (1/4 trên ngoài mông / cơ delta)", required_keywords: ["vị trí", "1/4 trên ngoài", "mông", "cơ delta"], clarification_prompt: "Mốc giải phẫu xác định vị trí tiêm bắp để an toàn?" },
+                                { step_id: 8, standard_action: "Sát khuẩn da theo đường xoắn ốc từ trong ra ngoài (đường kính >= 5cm)", required_keywords: ["sát khuẩn", "xoắn ốc", "trong ra ngoài", "cồn 70"], clarification_prompt: "Kỹ thuật sát khuẩn da vùng tiêm?" },
+                                { step_id: 9, standard_action: "Căng phẳng da, đâm kim dứt khoát góc 90 độ ngập 2/3 kim", required_keywords: ["căng da", "90 độ", "vuông góc", "ngập 2/3"], clarification_prompt: "Bạn căng da và đâm kim với góc độ bao nhiêu?" },
+                                { step_id: 10, standard_action: "Kéo nhẹ piston kiểm tra chắc chắn không có máu", required_keywords: ["kéo piston", "rút nhẹ", "không có máu"], clarification_prompt: "Thao tác bắt buộc trước khi bơm thuốc vào bắp thịt?" },
+                                { step_id: 11, standard_action: "Bơm thuốc từ từ, rút kim nhanh góc 90 độ và ấn nhẹ gạc khô", required_keywords: ["bơm chậm", "rút nhanh", "90 độ", "gạc khô", "ấn nhẹ"], clarification_prompt: "Tốc độ bơm thuốc và kỹ thuật rút kim?" },
+                                { step_id: 12, standard_action: "Hủy kim vào thùng kháng thủng, vệ sinh tay, dặn dò người bệnh và ghi hồ sơ", required_keywords: ["thùng kháng thủng", "rửa tay", "dặn dò", "ghi hồ sơ"], clarification_prompt: "Bạn kết thúc thủ thuật và hoàn tất việc hành chính nào?" }
+                            ]
+                        },
+                        {
+                            id: "tiem_tinh_mach",
+                            name: "Tiêm tĩnh mạch (IV)",
+                            prompt_context: "Quy trình tiêm thuốc vào tĩnh mạch theo y lệnh thuốc ống hoặc thuốc lọ bột/nước.",
+                            base_checklist: [
+                                { step_id: 1, standard_action: "Đối chiếu người bệnh và kiểm tra 5 đúng theo y lệnh", required_keywords: ["đối chiếu", "5 đúng", "tên", "thuốc", "liều"], clarification_prompt: "Bạn kiểm tra y lệnh và thông tin bệnh nhân ra sao?" },
+                                { step_id: 2, standard_action: "Vệ sinh tay thường quy, mang khẩu trang", required_keywords: ["vệ sinh tay", "rửa tay", "khẩu trang"], clarification_prompt: "Thao tác vệ sinh tay trước khi lấy thuốc?" },
+                                { step_id: 6, standard_action: "Đuổi sạch bọt khí ra khỏi bơm tiêm", required_keywords: ["đuổi khí", "bọt khí"], clarification_prompt: "Làm sao đảm bảo an toàn tắc mạch trước khi tiêm tĩnh mạch?" },
+                                { step_id: 7, standard_action: "Đặt gối kê tay, buộc garô phía trên vị trí tiêm 5 - 10 cm", required_keywords: ["gối kê", "garo", "buộc garo", "5-10cm"], clarification_prompt: "Bạn đặt dụng cụ gì dưới tay và buộc garô ở đâu?" },
+                                { step_id: 8, standard_action: "Bảo bệnh nhân nắm tay, sờ tĩnh mạch và sát khuẩn da rộng", required_keywords: ["nắm tay", "sờ tĩnh mạch", "sát khuẩn"], clarification_prompt: "Cách làm tĩnh mạch nổi rõ và sát khuẩn?" },
+                                { step_id: 9, standard_action: "Căng da cố định tĩnh mạch, đâm kim ngửa vát góc 15 - 30 độ", required_keywords: ["căng da", "ngửa vát", "15-30 độ", "đâm kim"], clarification_prompt: "Tư thế mặt vát và góc đâm kim vào tĩnh mạch?" },
+                                { step_id: 10, standard_action: "Thấy máu trào vào đốc kim, hạ thấp thân kim luồn thêm 1-2mm", required_keywords: ["máu trào", "hạ kim", "luồn thêm"], clarification_prompt: "Dấu hiệu nhận biết kim đã vào lòng mạch?" },
+                                { step_id: 11, standard_action: "Tháo dây garô, bảo người bệnh mở bàn tay", required_keywords: ["tháo garo", "xòe tay", "mở tay"], clarification_prompt: "Trước khi bơm thuốc tĩnh mạch, bắt buộc phải làm gì?" },
+                                { step_id: 12, standard_action: "Bơm thuốc chậm theo tốc độ quy định, theo dõi sắc mặt người bệnh", required_keywords: ["bơm chậm", "theo dõi", "sắc mặt"], clarification_prompt: "Tốc độ bơm thuốc tĩnh mạch?" },
+                                { step_id: 13, standard_action: "Đặt gạc khô lên vết tiêm, rút kim nhanh và ép giữ cầm máu, dọn dụng cụ ghi hồ sơ", required_keywords: ["đặt gạc", "rút kim", "ép giữ", "thùng kháng thủng", "ghi hồ sơ"], clarification_prompt: "Kỹ thuật rút kim và hoàn tất thủ thuật?" }
+                            ]
+                        },
+                        {
+                            id: "tiem_duoi_da",
+                            name: "Tiêm dưới da (SC - Insulin, Heparin)",
+                            prompt_context: "Quy trình tiêm dưới da theo y lệnh lọ thuốc hoặc bơm tiêm đóng sẵn.",
+                            base_checklist: [
+                                { step_id: 1, standard_action: "Kiểm tra 5 đúng đối chiếu người bệnh và đọc kỹ y lệnh thuốc", required_keywords: ["5 đúng", "đối chiếu", "tên", "liều", "thuốc"], clarification_prompt: "Bạn đối chiếu y lệnh và người bệnh ra sao?" },
+                                { step_id: 2, standard_action: "Vệ sinh tay thường quy, chuẩn bị bơm kim tiêm phù hợp", required_keywords: ["vệ sinh tay", "rửa tay", "chuẩn bị"], clarification_prompt: "Vệ sinh tay và chuẩn bị dụng cụ?" },
+                                { step_id: 5, standard_action: "Chọn vị trí tiêm: Mặt ngoài cánh tay hoặc quanh rốn cách rốn >= 2cm", required_keywords: ["ngoài cánh tay", "quanh rốn", "cách rốn 2cm"], clarification_prompt: "Vị trí chọn để tiêm dưới da?" },
+                                { step_id: 6, standard_action: "Sát khuẩn da từ trong ra ngoài xoắn ốc, để khô tự nhiên", required_keywords: ["sát khuẩn", "xoắn ốc", "trong ra ngoài"], clarification_prompt: "Kỹ thuật sát khuẩn vùng da tiêm?" },
+                                { step_id: 7, standard_action: "Véo nếp da, đâm kim dứt khoát góc 45 độ (hoặc 90 độ kim ngắn)", required_keywords: ["véo da", "45 độ", "đâm kim"], clarification_prompt: "Bạn xử lý nếp da thế nào và đâm kim góc bao nhiêu?" },
+                                { step_id: 8, standard_action: "Thả nếp véo da, bơm thuốc từ từ đều tay", required_keywords: ["thả véo", "bơm thuốc", "từ từ"], clarification_prompt: "Thao tác trước và trong khi đẩy thuốc dưới da?" },
+                                { step_id: 9, standard_action: "Rút kim nhanh, ấn nhẹ gạc khô (không day ấn), hủy kim ghi hồ sơ", required_keywords: ["rút kim", "gạc khô", "không day", "thùng kháng thủng", "ghi hồ sơ"], clarification_prompt: "Kỹ thuật rút kim và chăm sóc vết tiêm dưới da?" }
+                            ]
+                        },
+                        {
+                            id: "tiem_trong_da",
+                            name: "Tiêm trong da (ID - Test nội bì / BCG)",
+                            prompt_context: "Quy trình thử phản ứng da hoặc tiêm vắc xin tạo nốt sẩn da cam.",
+                            base_checklist: [
+                                { step_id: 1, standard_action: "Thực hiện 5 đúng, đối chiếu người bệnh, giải thích mục đích thử test", required_keywords: ["5 đúng", "đối chiếu", "giải thích", "thử test"], clarification_prompt: "Bạn đối chiếu và giải thích với bệnh nhân ra sao?" },
+                                { step_id: 2, standard_action: "Vệ sinh tay, chuẩn bị bơm tiêm 1ml (kim 26-27G)", required_keywords: ["vệ sinh tay", "bơm 1ml", "chuẩn bị"], clarification_prompt: "Loại bơm kim tiêm dùng cho tiêm trong da?" },
+                                { step_id: 5, standard_action: "Chọn vị trí: 1/3 trên mặt trước trong cẳng tay", required_keywords: ["1/3 trên", "trước trong cẳng tay", "da sáng"], clarification_prompt: "Vị trí giải phẫu chuẩn để tiêm trong da?" },
+                                { step_id: 6, standard_action: "Sát khuẩn da hình xoắn ốc từ trong ra ngoài (>= 5cm), để khô", required_keywords: ["sát khuẩn", "xoắn ốc", "để khô"], clarification_prompt: "Kỹ thuật sát khuẩn da vùng tiêm test?" },
+                                { step_id: 7, standard_action: "Căng da, đâm kim ngửa mặt vát góc 10 - 15 độ vừa ngập mặt vát", required_keywords: ["căng da", "ngửa vát", "10-15 độ", "ngập mặt vát"], clarification_prompt: "Tư thế mặt vát và góc đâm kim?" },
+                                { step_id: 8, standard_action: "Bơm chậm 0.1ml thuốc tạo nốt sẩn da cam đường kính 5-6mm", required_keywords: ["bơm chậm", "0.1ml", "nốt sẩn", "da cam"], clarification_prompt: "Thể tích thuốc bơm và đặc điểm nốt sẩn hình thành?" },
+                                { step_id: 9, standard_action: "Rút kim nhanh theo góc đâm, TUYỆT ĐỐI KHÔNG day ấn lên nốt sẩn", required_keywords: ["rút kim", "không day", "không ấn"], clarification_prompt: "Xử lý sau khi rút kim tiêm trong da?" },
+                                { step_id: 10, standard_action: "Dùng bút khoanh tròn nốt sẩn, ghi giờ và dặn theo dõi đọc sau 15-20 phút", required_keywords: ["khoanh tròn", "ghi giờ", "15 phút", "20 phút", "đọc kết quả"], clarification_prompt: "Bạn đánh dấu và hẹn thời gian đọc test bao lâu?" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "nursing_other",
+                    title: "2. Kỹ năng điều dưỡng khác",
+                    skills: [
+                        {
+                            id: "cat_chi_vet_khau",
+                            name: "Cắt chỉ vết khâu (27 bước)",
+                            prompt_context: "Quy trình cắt chỉ vết khâu chuẩn 27 bước: nhận định vết khâu, đặt tấm lót, mở mâm vô khuẩn, tháo băng cũ, sát khuẩn, đặt gạc an toàn, nhấc mối chỉ bằng nhíp luồn kéo cắt sát chân chỉ (tránh để phần chỉ trên da chui xuống dưới da), đặt từng mối lên gạc đếm kiểm tra, sát khuẩn lại, che chở và cố định.",
+                            scenarios: [
+                                "Bệnh nhân nam, 45 tuổi, mổ nội soi cắt ruột thừa ngày thứ 7. Vết mổ khô, lành tốt, không sưng đỏ. Bác sĩ chỉ định cắt chỉ vết khâu.",
+                                "Bệnh nhân nữ, 30 tuổi, khâu vết thương rách da cẳng chân do tai nạn giao thông ngày thứ 10. Vết thương đã liền tốt. Bác sĩ chỉ định cắt chỉ.",
+                                "Bệnh nhân nam, 60 tuổi, phẫu thuật thoát vị bẹn ngày thứ 8. Bác sĩ chỉ định cắt chỉ ngắt quãng."
+                            ],
+                            checklist: [
+                                { step_id: 1, standard_action: "Chào hỏi, giới thiệu bản thân", required_keywords: ["chào", "giới thiệu", "tên"], clarification_prompt: "Khi tiếp xúc với người bệnh lần đầu, bạn sẽ nói gì?" },
+                                { step_id: 2, standard_action: "Xác định đúng người bệnh", required_keywords: ["hỏi tên", "tuổi", "đối chiếu", "người bệnh"], clarification_prompt: "Bạn làm cách nào để chắc chắn mình đang cắt chỉ đúng bệnh nhân?" },
+                                { step_id: 3, standard_action: "Báo giải thích cho người bệnh biết", required_keywords: ["báo", "giải thích", "cắt chỉ"], clarification_prompt: "Bạn sẽ nói gì với người bệnh về mục đích thủ thuật để họ yên tâm?" },
+                                { step_id: 4, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Trước khi thăm khám, bạn cần làm gì với đôi tay của mình?" },
+                                { step_id: 5, standard_action: "Nhận định tình trạng người bệnh", required_keywords: ["nhận định", "tình trạng", "người bệnh", "tổng trạng"], clarification_prompt: "Trước khi làm thủ thuật, bạn đánh giá yếu tố toàn thân nào của người bệnh?" },
+                                { step_id: 6, standard_action: "Nhận định tình trạng vết khâu", required_keywords: ["nhận định", "vết khâu", "kiểm tra", "sưng", "đỏ", "lành"], clarification_prompt: "Bạn cần quan sát và đánh giá những gì tại vị trí sắp cắt chỉ?" },
+                                { step_id: 7, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Sau khi nhận định xong và đi chuẩn bị dụng cụ, bạn làm gì?" },
+                                { step_id: 8, standard_action: "Chuẩn bị dụng cụ đầy đủ và phù hợp", required_keywords: ["chuẩn bị", "dụng cụ", "đầy đủ", "phù hợp", "kéo cắt chỉ", "nhíp", "mâm vô khuẩn"], clarification_prompt: "Bạn cần những dụng cụ y tế nào để thực hiện việc cắt chỉ?" },
+                                { step_id: 9, standard_action: "Bộc lộ vùng vết khâu (giữ cho người bệnh được kín đáo và thoải mái)", required_keywords: ["bộc lộ", "vết khâu", "kín đáo", "thoải mái"], clarification_prompt: "Bạn bộc lộ vị trí thao tác như thế nào để đảm bảo sự riêng tư cho bệnh nhân?" },
+                                { step_id: 10, standard_action: "Đặt tấm lót không thấm phía dưới nơi vị trí vết khâu", required_keywords: ["đặt tấm lót", "không thấm", "phía dưới", "dưới vết khâu"], clarification_prompt: "Làm sao để bảo vệ giường bệnh không bị dính dịch/máu bẩn?" },
+                                { step_id: 11, standard_action: "Vệ sinh tay thường quy, mang găng tay sạch", required_keywords: ["vệ sinh tay", "rửa tay", "mang găng tay sạch", "đeo găng"], clarification_prompt: "Trước khi chạm vào mâm vô khuẩn và tháo băng, bạn xử lý tay mình thế nào?" },
+                                { step_id: 12, standard_action: "Mở khăn mâm dụng cụ vô khuẩn", required_keywords: ["mở khăn", "mâm", "vô khuẩn"], clarification_prompt: "Bạn thao tác thế nào với bộ mâm dụng cụ đã chuẩn bị?" },
+                                { step_id: 13, standard_action: "Lấy dụng cụ vô khuẩn an toàn", required_keywords: ["lấy dụng cụ", "vô khuẩn", "an toàn", "kềm tiếp tế"], clarification_prompt: "Bạn dùng dụng cụ gì để gắp đồ vật bên trong mâm vô khuẩn?" },
+                                { step_id: 14, standard_action: "Sắp xếp dụng cụ trong mâm", required_keywords: ["sắp xếp", "dụng cụ", "trong mâm"], clarification_prompt: "Sau khi lấy kềm tiếp tế, bạn thao tác thế nào với đồ dùng trong mâm?" },
+                                { step_id: 15, standard_action: "Tháo băng bẩn (bằng kềm sạch hoặc găng tay sạch), rửa lại tay (nếu cần).", required_keywords: ["tháo băng bẩn", "kềm sạch", "găng tay sạch", "rửa lại tay"], clarification_prompt: "Bạn gỡ lớp băng cũ đang che vết khâu bằng cách nào?" },
+                                { step_id: 16, standard_action: "Sát khuẩn vết khâu và vùng da xung quanh an toàn", required_keywords: ["sát khuẩn", "vết khâu", "vùng da xung quanh", "từ trong ra ngoài"], clarification_prompt: "Nguyên tắc vô khuẩn vết khâu trước khi cắt chỉ được thực hiện như thế nào?" },
+                                { step_id: 17, standard_action: "Đặt gạc ở vị trí an toàn gần vết khâu.", required_keywords: ["đặt gạc", "vị trí an toàn", "gần vết khâu"], clarification_prompt: "Bạn chuẩn bị gạc ở đâu để hứng các mối chỉ sau khi cắt?" },
+                                { step_id: 18, standard_action: "Dùng kéo cắt từng mối chỉ nhẹ nhàng. (chỉ nằm trên da không được chui xuống dưới da).", required_keywords: ["kéo cắt chỉ", "từng mối", "nhẹ nhàng", "phần chỉ trên da không chui xuống", "kéo sát chân chỉ", "nhíp nhấc mối chỉ"], clarification_prompt: "Khi dùng kéo và nhíp để cắt chỉ, thao tác quan trọng nhất để tránh nhiễm trùng mô bên dưới là gì?" },
+                                { step_id: 19, standard_action: "Đặt từng mối chỉ lên miếng gạc để kiểm tra sự nguyên vẹn của mối chỉ.", required_keywords: ["đặt lên gạc", "từng mối chỉ", "kiểm tra", "nguyên vẹn", "đếm mối chỉ"], clarification_prompt: "Cắt xong mối chỉ, bạn làm gì với nó để đảm bảo không bị sót chỉ dưới da?" },
+                                { step_id: 20, standard_action: "Sát khuẩn lại vết khâu, rộng ra xung quanh 5cm", required_keywords: ["sát khuẩn lại", "vết khâu", "rộng ra 5cm", "xung quanh"], clarification_prompt: "Sau khi rút hết toàn bộ chỉ, bạn xử lý vùng da vết khâu như thế nào?" },
+                                { step_id: 21, standard_action: "Che chở vết khâu (rộng ra 5cm)", required_keywords: ["che chở", "vết khâu", "rộng ra 5cm", "đặt gạc"], clarification_prompt: "Làm sao để bảo vệ vết khâu sau khi đã sát khuẩn lại?" },
+                                { step_id: 22, standard_action: "Cố định băng bằng băng keo hoặc băng cuộn (nếu cần)", required_keywords: ["cố định", "băng keo", "dán keo", "băng cuộn"], clarification_prompt: "Bạn dùng gì để giữ cố định miếng gạc trên vết khâu?" },
+                                { step_id: 23, standard_action: "Tháo găng tay, vệ sinh tay thường quy", required_keywords: ["tháo găng", "vệ sinh tay", "rửa tay"], clarification_prompt: "Sau khi dán băng keo xong, bạn xử lý đôi tay của mình thế nào?" },
+                                { step_id: 24, standard_action: "Báo cho người bệnh biết việc đã xong, cho người bệnh nằm lại tư thế tiện nghi", required_keywords: ["báo xong", "tư thế tiện nghi", "thoải mái"], clarification_prompt: "Kết thúc thủ thuật, bạn giao tiếp thế nào và dặn dò, sắp xếp cho bệnh nhân ra sao?" },
+                                { step_id: 25, standard_action: "Thu dọn dụng cụ, xử lý dụng cụ và chất thải lây nhiễm đúng cách", required_keywords: ["thu dọn", "dụng cụ", "chất thải", "phân loại rác", "rác y tế"], clarification_prompt: "Bạn làm gì với mâm dụng cụ và những miếng gạc có dính mối chỉ?" },
+                                { step_id: 26, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Sau khi phân loại rác xong, thao tác kiểm soát nhiễm khuẩn tiếp theo là gì?" },
+                                { step_id: 27, standard_action: "Ghi hồ sơ", required_keywords: ["ghi hồ sơ", "ghi bệnh án", "ghi chép"], clarification_prompt: "Thao tác cuối cùng để lưu lại bằng chứng đã cắt chỉ là gì?" }
+                            ],
+                            distractor_actions: [
+                                "Rút phần chỉ dính bẩn (phần lộ trên mặt da) chui qua mô dưới da gây nhiễm trùng vết khâu.",
+                                "Cắt cả hai nhánh bên của nút thắt chỉ khiến đoạn chỉ chìm dưới da không thể rút ra.",
+                                "Bỏ mối chỉ vừa cắt vào bồn hạt đậu hoặc thùng rác mà không xếp lên gạc để kiểm tra đếm số lượng.",
+                                "Sát khuẩn lại vết khâu bằng cồn 70 độ gây xót thay vì dùng Povidine/Betadine vô khuẩn.",
+                                "Mở khăn mâm vô khuẩn trước khi tháo găng tay tháo băng bẩn (làm vi khuẩn văng vào mâm)."
+                            ]
+                        },
+                        {
+                            id: "thay_bang_vet_thuong",
+                            name: "Thay băng vết thương (28 bước)",
+                            prompt_context: "Quy trình kỹ thuật thay băng vết thương chuẩn 28 bước.",
+                            checklist: [
+                                { step_id: 1, standard_action: "Chào hỏi, giới thiệu bản thân", required_keywords: ["chào", "giới thiệu", "tên"], clarification_prompt: "Khi đến gặp bệnh nhân, bạn nói gì đầu tiên?" },
+                                { step_id: 2, standard_action: "Xác định đúng người bệnh", required_keywords: ["hỏi tên", "tuổi", "đối chiếu"], clarification_prompt: "Làm sao xác định đúng người bệnh?" },
+                                { step_id: 3, standard_action: "Báo giải thích cho người bệnh biết", required_keywords: ["báo", "giải thích", "thay băng"], clarification_prompt: "Bạn giải thích điều gì?" },
+                                { step_id: 4, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước khi nhận định?" },
+                                { step_id: 5, standard_action: "Nhận định tình trạng người bệnh", required_keywords: ["nhận định", "tình trạng", "tổng trạng"], clarification_prompt: "Đánh giá toàn thân người bệnh?" },
+                                { step_id: 6, standard_action: "Nhận định tình trạng vết thương", required_keywords: ["nhận định", "vết thương", "vết mổ"], clarification_prompt: "Kiểm tra yếu tố gì ở vết thương?" },
+                                { step_id: 7, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước khi soạn dụng cụ?" },
+                                { step_id: 8, standard_action: "Chuẩn bị dụng cụ đầy đủ và phù hợp", required_keywords: ["chuẩn bị", "dụng cụ", "mâm vô khuẩn"], clarification_prompt: "Chuẩn bị dụng cụ thay băng?" },
+                                { step_id: 9, standard_action: "Chuẩn bị tư thế người bệnh phù hợp, kín đáo và thoải mái", required_keywords: ["tư thế", "kín đáo", "thoải mái"], clarification_prompt: "Tư thế người bệnh?" },
+                                { step_id: 10, standard_action: "Đặt tấm lót không thấm phía dưới nơi vị trí vết thương", required_keywords: ["đặt tấm lót", "không thấm", "dưới vết thương"], clarification_prompt: "Trải tấm lót giữ vệ sinh giường?" },
+                                { step_id: 11, standard_action: "Vệ sinh tay thường quy, mang găng tay sạch", required_keywords: ["vệ sinh tay", "mang găng tay sạch"], clarification_prompt: "Xử lý tay trước khi tháo băng?" },
+                                { step_id: 12, standard_action: "Mở khăn mâm dụng cụ vô khuẩn", required_keywords: ["mở khăn", "mâm vô khuẩn"], clarification_prompt: "Thao tác mở mâm vô khuẩn?" },
+                                { step_id: 13, standard_action: "Lấy kềm vô khuẩn an toàn", required_keywords: ["lấy kềm", "vô khuẩn", "kềm tiếp tế"], clarification_prompt: "Lấy kềm trong mâm?" },
+                                { step_id: 14, standard_action: "Sắp xếp dụng cụ trong mâm", required_keywords: ["sắp xếp", "dụng cụ", "trong mâm"], clarification_prompt: "Sắp xếp đồ trong mâm?" },
+                                { step_id: 15, standard_action: "Tháo băng bẩn bằng kềm sạch hoặc găng sạch, rửa lại tay", required_keywords: ["tháo băng bẩn", "kềm sạch", "găng tay"], clarification_prompt: "Dụng cụ và thao tác gỡ băng cũ?" },
+                                { step_id: 16, standard_action: "Rửa bên trong vết thương từ trong ra ngoài rìa, trên xuống dưới, xa đến gần", required_keywords: ["rửa bên trong", "trong ra ngoài", "trên xuống dưới", "xa đến gần"], clarification_prompt: "Chiều hướng rửa bên trong vết thương?" },
+                                { step_id: 17, standard_action: "Rửa vùng da xung quanh vết thương rộng ra ngoài 5cm", required_keywords: ["rửa xung quanh", "rộng ra 5cm"], clarification_prompt: "Xử lý vùng da xung quanh vết thương?" },
+                                { step_id: 18, standard_action: "Dùng gạc miếng chậm khô bên trong vết thương", required_keywords: ["chậm khô", "thấm khô", "bên trong"], clarification_prompt: "Làm khô lòng vết thương?" },
+                                { step_id: 19, standard_action: "Lau khô vùng da xung quanh vết thương", required_keywords: ["lau khô", "da xung quanh"], clarification_prompt: "Lau khô da xung quanh?" },
+                                { step_id: 20, standard_action: "Sát khuẩn vùng da xung quanh vết thương bằng dung dịch sát khuẩn da", required_keywords: ["sát khuẩn", "da xung quanh", "cồn"], clarification_prompt: "Sát khuẩn da quanh vết thương?" },
+                                { step_id: 21, standard_action: "Đắp thuốc lên vết thương nếu có y lệnh", required_keywords: ["đắp thuốc", "nếu có y lệnh"], clarification_prompt: "Đắp thuốc vết thương?" },
+                                { step_id: 22, standard_action: "Đặt băng gạc lên vết thương phủ rộng ra 3-5 cm", required_keywords: ["đặt băng gạc", "rộng ra 3-5 cm"], clarification_prompt: "Che phủ vết thương?" },
+                                { step_id: 23, standard_action: "Cố định băng bằng băng keo hoặc băng cuộn", required_keywords: ["cố định", "băng keo", "dán keo"], clarification_prompt: "Cố định miếng gạc?" },
+                                { step_id: 24, standard_action: "Tháo găng tay, vệ sinh tay thường quy", required_keywords: ["tháo găng", "vệ sinh tay", "rửa tay"], clarification_prompt: "Xử lý tay sau khi dán băng?" },
+                                { step_id: 25, standard_action: "Báo người bệnh việc đã xong, cho nằm lại tư thế tiện nghi", required_keywords: ["báo xong", "tư thế tiện nghi"], clarification_prompt: "Dặn dò người bệnh sau thủ thuật?" },
+                                { step_id: 26, standard_action: "Thu dọn dụng cụ, phân loại chất thải lây nhiễm đúng cách", required_keywords: ["thu dọn", "dụng cụ", "chất thải"], clarification_prompt: "Dọn dẹp rác và dụng cụ?" },
+                                { step_id: 27, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước khi ghi hồ sơ?" },
+                                { step_id: 28, standard_action: "Ghi hồ sơ bệnh án", required_keywords: ["ghi hồ sơ", "ghi bệnh án"], clarification_prompt: "Hoàn tất thủ tục hành chính?" }
+                            ]
+                        },
+                        {
+                            id: "dat_thong_mui_da_day",
+                            name: "Đặt ống thông mũi - dạ dày (26 bước)",
+                            prompt_context: "Quy trình kỹ thuật đặt ống thông mũi - dạ dày chuẩn 26 bước.",
+                            checklist: [
+                                { step_id: 1, standard_action: "Chào người bệnh và giới thiệu bản thân", required_keywords: ["chào", "giới thiệu", "tên"], clarification_prompt: "Chào hỏi người bệnh?" },
+                                { step_id: 2, standard_action: "Xác định đúng người bệnh", required_keywords: ["hỏi tên", "tuổi", "đối chiếu"], clarification_prompt: "Đối chiếu người bệnh?" },
+                                { step_id: 3, standard_action: "Báo và giải thích cho người bệnh", required_keywords: ["báo", "giải thích", "đặt ống thông"], clarification_prompt: "Giải thích thủ thuật?" },
+                                { step_id: 4, standard_action: "Nhận định tình trạng của người bệnh", required_keywords: ["nhận định", "tình trạng", "khám"], clarification_prompt: "Đánh giá người bệnh?" },
+                                { step_id: 5, standard_action: "Vệ sinh tay thường qui", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước soạn dụng cụ?" },
+                                { step_id: 6, standard_action: "Chuẩn bị dụng cụ đầy đủ và phù hợp", required_keywords: ["chuẩn bị", "dụng cụ", "ống thông"], clarification_prompt: "Chuẩn bị dụng cụ?" },
+                                { step_id: 7, standard_action: "Cho người bệnh nằm tư thế Fowler cao (đầu cao 45 độ)", required_keywords: ["tư thế Fowler cao", "đầu cao 45 độ"], clarification_prompt: "Tư thế bệnh nhân?" },
+                                { step_id: 8, standard_action: "Choàng tấm vải không thấm và khăn bông qua cổ người bệnh", required_keywords: ["choàng vải", "khăn bông", "qua cổ"], clarification_prompt: "Trải khăn bảo vệ?" },
+                                { step_id: 9, standard_action: "Vệ sinh 2 lỗ mũi", required_keywords: ["vệ sinh", "lỗ mũi", "làm sạch mũi"], clarification_prompt: "Làm sạch mũi?" },
+                                { step_id: 10, standard_action: "Đặt bồn hạt đậu cạnh má", required_keywords: ["bồn hạt đậu", "cạnh má"], clarification_prompt: "Đặt bồn hạt đậu?" },
+                                { step_id: 11, standard_action: "Vệ sinh tay thường qui, mang găng tay sạch", required_keywords: ["vệ sinh tay", "mang găng tay sạch"], clarification_prompt: "Xử lý tay trước khi chạm ống?" },
+                                { step_id: 12, standard_action: "Đo ống từ chóp mũi -> dái tai -> trung điểm mũi ức và rốn, làm dấu", required_keywords: ["đo ống", "chóp mũi", "dái tai", "trung điểm", "mũi ức", "rốn", "làm dấu"], clarification_prompt: "Đo chiều dài ống thông?" },
+                                { step_id: 13, standard_action: "Làm trơn đầu ống thông, vẩy đầu ống cho ráo", required_keywords: ["làm trơn", "đầu ống", "bôi trơn"], clarification_prompt: "Bôi trơn đầu ống?" },
+                                { step_id: 14, standard_action: "Đưa ống vào lỗ mũi đến vòm họng dừng lại, nghiêng cằm bảo nuốt", required_keywords: ["đưa ống", "vòm họng", "nghiêng cằm", "yêu cầu nuốt", "bảo nuốt"], clarification_prompt: "Thao tác đưa ống qua mũi họng?" },
+                                { step_id: 15, standard_action: "Dùng que đè lưỡi kiểm tra ống qua khỏi hầu", required_keywords: ["que đè lưỡi", "kiểm tra", "qua hầu"], clarification_prompt: "Kiểm tra ống trong miệng họng?" },
+                                { step_id: 16, standard_action: "Đưa ống tiếp tục theo nhịp nuốt mỗi lần 5-10cm đến mức làm dấu", required_keywords: ["đưa tiếp", "theo nhịp nuốt", "5-10 cm", "đến mức làm dấu"], clarification_prompt: "Đưa ống xuống dạ dày?" },
+                                { step_id: 17, standard_action: "Thử ống: Rút dịch dạ dày thử trên giấy đo pH (pH <= 5)", required_keywords: ["thử ống", "rút dịch", "giấy quỳ", "đo ph", "ph <= 5"], clarification_prompt: "Kiểm tra vị trí ống trong dạ dày?" },
+                                { step_id: 18, standard_action: "Cố định ống ở mũi hoặc má bằng băng keo", required_keywords: ["cố định", "ở mũi", "ở má", "băng keo"], clarification_prompt: "Cố định ống thông?" },
+                                { step_id: 19, standard_action: "Thực hiện bước tiếp theo tùy mục đích (nuôi ăn, giải áp, rửa dạ dày)", required_keywords: ["thực hiện", "mục đích", "nuôi ăn", "rút dịch", "giải áp"], clarification_prompt: "Thao tác theo mục đích đặt ống?" },
+                                { step_id: 20, standard_action: "Cố định ống ở đầu giường hoặc áo cao hơn dạ dày (nếu lưu ống)", required_keywords: ["cố định", "trên áo", "cao hơn dạ dày"], clarification_prompt: "Cố định đuôi ống lưu?" },
+                                { step_id: 21, standard_action: "Chậm khô miệng mũi người bệnh", required_keywords: ["lau", "chậm khô", "miệng", "mũi"], clarification_prompt: "Vệ sinh miệng mũi sau đặt?" },
+                                { step_id: 22, standard_action: "Tháo găng tay, vệ sinh tay thường qui", required_keywords: ["tháo găng", "vệ sinh tay", "rửa tay"], clarification_prompt: "Xử lý tay sau thủ thuật?" },
+                                { step_id: 23, standard_action: "Báo người bệnh việc đã xong, cho nằm tư thế tiện nghi đầu cao", required_keywords: ["báo xong", "tư thế tiện nghi", "giữ đầu cao"], clarification_prompt: "Dặn dò và tư thế người bệnh?" },
+                                { step_id: 24, standard_action: "Thu dọn dụng cụ, xử lý chất thải lây nhiễm đúng cách", required_keywords: ["thu dọn", "dụng cụ", "chất thải"], clarification_prompt: "Dọn dẹp rác và dụng cụ?" },
+                                { step_id: 25, standard_action: "Vệ sinh tay thường qui", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước ghi hồ sơ?" },
+                                { step_id: 26, standard_action: "Ghi hồ sơ bệnh án", required_keywords: ["ghi hồ sơ", "ghi bệnh án"], clarification_prompt: "Ghi chép hồ sơ bệnh án?" }
+                            ]
+                        },
+                        {
+                            id: "khau_trang",
+                            name: "Mang và tháo khẩu trang y tế đúng quy trình",
+                            prompt_context: "Quy trình kiểm soát nhiễm khuẩn, mang và tháo khẩu trang đúng kỹ thuật.",
+                            checklist: [
+                                { step_id: 1, standard_action: "Vệ sinh tay thường quy trước khi cầm khẩu trang", required_keywords: ["vệ sinh tay", "rửa tay", "sát khuẩn tay"], clarification_prompt: "Trước khi chạm vào khẩu trang sạch, bạn cần làm gì trước tiên?" },
+                                { step_id: 2, standard_action: "Kiểm tra khẩu trang, phân biệt mặt trong/ngoài và nẹp mũi", required_keywords: ["kiểm tra", "mặt trong", "mặt ngoài", "nẹp mũi", "thanh nẹp"], clarification_prompt: "Làm thế nào để phân biệt mặt trong, mặt ngoài và mép trên của khẩu trang?" },
+                                { step_id: 3, standard_action: "Cầm dây quai đeo vào tai, che kín mũi, miệng và cằm", required_keywords: ["dây quai", "đeo vào tai", "che kín", "mũi", "miệng", "cằm"], clarification_prompt: "Bạn đặt khẩu trang lên mặt và giữ bằng bộ phận nào?" },
+                                { step_id: 4, standard_action: "Dùng ngón tay miết thanh nẹp nhôm ôm sát sống mũi", required_keywords: ["miết", "nẹp nhôm", "sống mũi", "ôm sát", "kín"], clarification_prompt: "Bạn cố định phần nẹp nhôm trên sống mũi bằng động tác nào?" },
+                                { step_id: 5, standard_action: "Kéo mép dưới phủ kín cằm và kiểm tra độ kín", required_keywords: ["kéo", "dưới cằm", "phủ kín", "kiểm tra"], clarification_prompt: "Mép dưới của khẩu trang cần phủ đến vị trí nào?" },
+                                { step_id: 6, standard_action: "Vệ sinh tay trước khi tiến hành tháo khẩu trang", required_keywords: ["vệ sinh tay", "sát khuẩn tay", "trước khi tháo"], clarification_prompt: "Trước khi đưa tay lên tháo khẩu trang bẩn, bước trung gian nào là bắt buộc?" },
+                                { step_id: 7, standard_action: "Tháo khẩu trang chỉ cầm vào dây quai, không chạm mặt ngoài", required_keywords: ["dây quai", "tháo", "không chạm", "mặt ngoài", "mặt trước"], clarification_prompt: "Kỹ thuật tháo khẩu trang thế nào để tránh tay nhiễm khuẩn từ mặt ngoài?" },
+                                { step_id: 8, standard_action: "Bỏ khẩu trang vào thùng rác y tế lây nhiễm có nắp đậy", required_keywords: ["thùng rác", "y tế", "lây nhiễm", "có nắp"], clarification_prompt: "Khẩu trang đã qua sử dụng phải bỏ vào thùng rác loại nào?" },
+                                { step_id: 9, standard_action: "Vệ sinh tay thường quy ngay sau khi bỏ khẩu trang", required_keywords: ["vệ sinh tay", "rửa tay", "sau khi tháo"], clarification_prompt: "Thao tác vệ sinh cuối cùng sau khi bỏ khẩu trang là gì?" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "vital_signs",
+                    title: "3. Đo huyết áp động mạch",
+                    skills: [
+                        {
+                            id: "do_huyet_ap",
+                            name: "Quy trình đo huyết áp cánh tay",
+                            prompt_context: "Quy trình đo huyết áp động mạch cánh tay đúng kỹ thuật.",
+                            checklist: [
+                                { step_id: 1, standard_action: "Cho người bệnh nghỉ ngơi ít nhất 5 phút, giải thích quy trình", required_keywords: ["nghỉ ngơi", "5 phút", "giải thích"], clarification_prompt: "Trước khi đo huyết áp, bệnh nhân cần được nghỉ ngơi bao lâu?" },
+                                { step_id: 2, standard_action: "Tư thế ngồi chuẩn: Tay ngang mức tim, chân chạm phẳng sàn", required_keywords: ["tư thế", "ngang tim", "chân chạm sàn"], clarification_prompt: "Tư thế tay và chân của bệnh nhân được chuẩn bị thế nào?" },
+                                { step_id: 3, standard_action: "Quấn bao đo vừa vặn, mép dưới cách nếp khuỷu 2 - 3 cm", required_keywords: ["quấn bao", "2-3cm", "cách nếp khuỷu"], clarification_prompt: "Vị trí mép dưới bao đo cách nếp gấp khuỷu tay bao nhiêu cm?" },
+                                { step_id: 4, standard_action: "Bắt mạch quay, bơm bóng tìm mức mất mạch ước lượng HA tâm thu", required_keywords: ["bắt mạch quay", "bơm bóng", "mất mạch"], clarification_prompt: "Làm thế nào để ước lượng huyết áp tâm thu trước khi nghe?" },
+                                { step_id: 5, standard_action: "Đặt loa ống nghe lên vị trí động mạch cánh tay ở nếp khuỷu", required_keywords: ["đặt ống nghe", "động mạch cánh tay", "nếp khuỷu"], clarification_prompt: "Bạn đặt loa ống nghe ở vị trí nào? Có được nhét dưới bao không?" },
+                                { step_id: 6, standard_action: "Bơm bóng lên trên mức mất mạch 30 mmHg, xả chậm 2-3 mmHg/s", required_keywords: ["30 mmhg", "xả chậm", "2-3 mmhg"], clarification_prompt: "Bạn bơm áp lực cao hơn mức mất mạch bao nhiêu và tốc độ xả?" },
+                                { step_id: 7, standard_action: "Xác định Korotkoff I (tâm thu) và Korotkoff V (tâm trương)", required_keywords: ["tiếng đập đầu tiên", "tâm thu", "mất hẳn", "tâm trương"], clarification_prompt: "Dấu hiệu âm thanh Korotkoff nào tương ứng với HA tâm thu và tâm trương?" },
+                                { step_id: 8, standard_action: "Xả hết hơi, tháo bao đo, thông báo kết quả và ghi hồ sơ", required_keywords: ["xả hết hơi", "tháo bao", "thông báo", "ghi hồ sơ"], clarification_prompt: "Sau khi nghe xong, bạn hoàn tất quy trình ra sao?" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "cpr",
+                    title: "4. Hồi sức cấp cứu cơ bản (CPR)",
+                    skills: [
+                        {
+                            id: "bls_cpr",
+                            name: "Hồi sinh tim phổi cơ bản (CPR) người lớn",
+                            prompt_context: "Cấp cứu nạn nhân đột ngột ngừng hô hấp tuần hoàn.",
+                            checklist: [
+                                { step_id: 1, standard_action: "Đánh giá an toàn hiện trường xung quanh nạn nhân", required_keywords: ["an toàn", "hiện trường", "quan sát"], clarification_prompt: "Nguyên tắc đầu tiên trước khi tiếp cận nạn nhân bất tỉnh?" },
+                                { step_id: 2, standard_action: "Kiểm tra đáp ứng: Vỗ vai và gọi to", required_keywords: ["vỗ vai", "gọi to", "bác ơi", "đáp ứng"], clarification_prompt: "Bạn kiểm tra tri giác nạn nhân bằng động tác và lời nói nào?" },
+                                { step_id: 3, standard_action: "Gọi hỗ trợ khẩn cấp: Hô to gọi 115 và lấy máy AED", required_keywords: ["gọi cấp cứu", "115", "aed", "máy sốc điện"], clarification_prompt: "Nạn nhân bất tỉnh, bạn cần hô hoán hỗ trợ điều gì ngay lập tức?" },
+                                { step_id: 4, standard_action: "Bắt mạch cảnh và quan sát nhịp thở đồng thời trong 5-10 giây", required_keywords: ["mạch cảnh", "thở", "5-10 giây"], clarification_prompt: "Bạn kiểm tra mạch và nhịp thở ở đâu, trong bao nhiêu giây?" },
+                                { step_id: 5, standard_action: "Xác nhận ngừng tuần hoàn, đặt tay 1/2 dưới xương ức ép tim ngay", required_keywords: ["1/2 dưới xương ức", "gót bàn tay", "ép tim"], clarification_prompt: "Vị trí và tư thế đặt tay ép tim chuẩn xác trên ngực nạn nhân?" },
+                                { step_id: 6, standard_action: "Ép tim chuẩn: Sâu 5-6 cm, tần số 100-120 l/p, ngực nở hoàn toàn", required_keywords: ["5-6 cm", "100-120", "tần số", "ngực nở hoàn toàn"], clarification_prompt: "Nêu các tiêu chuẩn ép tim chất lượng cao (độ sâu, tần số, độ nở ngực)?" },
+                                { step_id: 7, standard_action: "Khai thông đường thở (ngửa đầu - nâng cằm), thổi ngạt 2 hơi", required_keywords: ["ngửa đầu nâng cằm", "thổi ngạt", "2 hơi"], clarification_prompt: "Thao tác mở đường thở và kỹ thuật thổi ngạt hiệu quả?" },
+                                { step_id: 8, standard_action: "Duy trì chu kỳ 30 ép tim : 2 thổi ngạt và sẵn sàng dùng AED", required_keywords: ["30:2", "chu kỳ", "aed", "liên tục"], clarification_prompt: "Tỷ lệ ép tim : thổi ngạt chuẩn là bao nhiêu?" }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        let currentSkill = null;
+        let currentPatient = null;
+        let currentMedicationOrder = null;
+        let activeChecklist = [];
+        let timerInterval = null;
+        let timeLeft = 360;
+        let userActions = []; 
+        let userErrors = [];  
+        let chatHistory = []; 
+
+        let GEMINI_API_KEY = "";
+        try {
+            GEMINI_API_KEY = localStorage.getItem("GEMINI_OSCE_KEY") || "";
+        } catch (e) {
+            console.warn("Không thể truy cập localStorage:", e);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                updateApiStatusBadge();
+                renderHomeMenu();
+                navigateHome();
+            } catch (err) {
+                console.error("Lỗi khởi tạo:", err);
+            }
+        });
+
+        function updateApiStatusBadge() {
+            const badge = document.getElementById('api-status-text');
+            if (!badge) return;
+            if (GEMINI_API_KEY && GEMINI_API_KEY.trim().length > 10) {
+                badge.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Gemini Online</span>`;
+            } else {
+                badge.innerHTML = `<span class="text-amber-600 font-semibold"><i class="fa-solid fa-microchip"></i> Offline Engine</span>`;
+            }
+        }
+
+        function openApiKeyModal() {
+            document.getElementById('api-key-input').value = GEMINI_API_KEY;
+            document.getElementById('api-modal').classList.remove('hidden');
+        }
+
+        function closeApiKeyModal() {
+            document.getElementById('api-modal').classList.add('hidden');
+        }
+
+        function saveApiKey() {
+            const val = document.getElementById('api-key-input').value.trim();
+            GEMINI_API_KEY = val;
+            try {
+                localStorage.setItem("GEMINI_OSCE_KEY", val);
+            } catch (e) {}
+            updateApiStatusBadge();
+            closeApiKeyModal();
+        }
+
+        function showScreen(screenId) {
+            const screens = {
+                'screen-home': 'block',
+                'screen-practice': 'flex',
+                'screen-result': 'block'
+            };
+
+            Object.keys(screens).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (id === screenId) {
+                        el.style.display = screens[id];
+                    } else {
+                        el.style.display = 'none';
+                    }
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function navigateHome() {
+            clearInterval(timerInterval);
+            currentSkill = null;
+            currentPatient = null;
+            currentMedicationOrder = null;
+            activeChecklist = [];
+            userActions = [];
+            userErrors = [];
+            chatHistory = [];
+            closeFinishConfirmModal();
+            showScreen('screen-home');
+        }
+
+        function renderHomeMenu() {
+            const container = document.getElementById('category-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            skillsData.categories.forEach(cat => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = "bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm";
+                
+                let skillsHtml = cat.skills.map(skill => `
+                    <div class="border border-slate-200 hover:border-teal-500 hover:shadow-md transition rounded-xl p-4 flex flex-col justify-between bg-slate-50/50 hover:bg-white group">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-100">
+                                    ${skill.base_checklist ? 'Checklist thích ứng dạng thuốc' : `${(skill.checklist || []).length} bước bảng kiểm`}
+                                </span>
+                                <span class="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded font-bold border border-amber-200">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI Scenario
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 group-hover:text-teal-700 transition">${skill.name}</h4>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">${skill.prompt_context}</p>
+                        </div>
+                        <button type="button" onclick="startPractice('${cat.id}', '${skill.id}')" class="mt-4 w-full bg-white group-hover:bg-teal-600 group-hover:text-white border border-slate-300 group-hover:border-teal-600 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition text-center shadow-2xs cursor-pointer">
+                            <i class="fa-solid fa-play mr-1"></i> Bắt đầu thi trạm
+                        </button>
+                    </div>
+                `).join('');
+
+                groupDiv.innerHTML = `
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-laptop-medical text-teal-600"></i> ${cat.title}
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        ${skillsHtml}
+                    </div>
+                `;
+                container.appendChild(groupDiv);
+            });
+        }
+
+        function buildDynamicInjectionChecklist(skill, medOrder) {
+            if (!skill.base_checklist) {
+                return skill.checklist || [];
+            }
+
+            const base = JSON.parse(JSON.stringify(skill.base_checklist));
+            let prepSteps = [];
+
+            if (medOrder && medOrder.form_type === "ampoule") {
+                prepSteps = [
+                    { step_id: 3, standard_action: "Kiểm tra tên thuốc, hạn dùng, độ trong; gõ nhẹ đầu ống đuổi thuốc xuống thân ống", required_keywords: ["kiểm tra thuốc", "hạn dùng", "gõ nhẹ", "đuổi thuốc xuống", "ống thuốc"], clarification_prompt: "Trước khi bẻ ống thuốc, bạn kiểm tra những gì và làm động tác gì để thuốc không đọng ở cổ ống?" },
+                    { step_id: 4, standard_action: "Sát khuẩn cổ ống thuốc, dùng miếng gạc lót bẻ cổ ống thuốc an toàn", required_keywords: ["sát khuẩn cổ ống", "miếng gạc", "lót gạc", "bẻ cổ ống", "bẻ ống"], clarification_prompt: "Bạn bẻ ống thuốc như thế nào để đảm bảo vô khuẩn và không đứt tay?" },
+                    { step_id: 5, standard_action: "Đưa kim vào ống thuốc rút đúng liều lượng chỉ định (ngửa mặt vát, không chạm mép cắt ống)", required_keywords: ["rút thuốc", "đúng liều", "ngửa vát", "không chạm mép", "rút vào bơm"], clarification_prompt: "Thao tác đưa kim vào ống rút thuốc như thế nào để tránh nhiễm khuẩn?" }
+                ];
+            } else if (medOrder && medOrder.form_type === "powder_vial") {
+                prepSteps = [
+                    { step_id: 3, standard_action: "Mở nắp bảo vệ, sát khuẩn nút cao su lọ thuốc bột và ống dung môi/nước cất", required_keywords: ["mở nắp", "sát khuẩn nút cao su", "nút cao su", "ống dung môi", "nước cất"], clarification_prompt: "Trước khi cắm kim vào lọ thuốc bột, bạn cần sát khuẩn vị trí nào?" },
+                    { step_id: 4, standard_action: "Bẻ ống dung môi, rút đủ thể tích dung môi và bơm từ từ vào lọ thuốc bột", required_keywords: ["rút dung môi", "bơm vào lọ", "dung môi", "nước cất"], clarification_prompt: "Bạn lấy dung môi và đưa vào lọ bột như thế nào?" },
+                    { step_id: 5, standard_action: "Lắc nhẹ/xoay tròn lọ thuốc cho bột tan hoàn toàn, sau đó dốc ngược lọ rút đúng liều thuốc đã pha", required_keywords: ["lắc tan", "tan hoàn toàn", "dốc ngược", "rút thuốc", "rút đủ liều"], clarification_prompt: "Làm thế nào để thuốc tan đều và cách rút thuốc sau khi hòa tan?" }
+                ];
+            } else if (medOrder && medOrder.form_type === "liquid_vial") {
+                prepSteps = [
+                    { step_id: 3, standard_action: "Lăn nhẹ lọ thuốc trong lòng bàn tay (nếu là hỗn dịch), sát khuẩn nút cao su lọ thuốc", required_keywords: ["lăn nhẹ", "sát khuẩn nút cao su", "nút cao su", "lọ thuốc"], clarification_prompt: "Thao tác chuẩn bị lọ thuốc và sát khuẩn nút cao su?" },
+                    { step_id: 4, standard_action: "Bơm một lượng không khí bằng thể tích thuốc cần lấy vào trong lọ thuốc", required_keywords: ["bơm khí", "lượng khí", "bằng thể tích", "bơm không khí"], clarification_prompt: "Tại sao cần bơm một lượng không khí tương đương vào lọ trước khi rút thuốc dung dịch?" },
+                    { step_id: 5, standard_action: "Dốc ngược lọ thuốc, rút chính xác liều lượng thuốc theo y lệnh", required_keywords: ["dốc ngược", "rút thuốc", "chính xác liều", "đúng liều"], clarification_prompt: "Tư thế lọ thuốc khi rút dung dịch thuốc ra bơm tiêm?" }
+                ];
+            }
+
+            const finalChecklist = [
+                base[0],
+                base[1],
+                ...prepSteps,
+                ...base.slice(2)
+            ];
+
+            finalChecklist.forEach((step, index) => {
+                step.step_id = index + 1;
+            });
+
+            return finalChecklist;
+        }
+
+        async function generatePatientAndScenario(skill) {
+            if (medicationOrdersDatabase[skill.id]) {
+                const orders = medicationOrdersDatabase[skill.id];
+                currentMedicationOrder = orders[Math.floor(Math.random() * orders.length)];
+            } else {
+                currentMedicationOrder = null;
+            }
+
+            if (GEMINI_API_KEY && GEMINI_API_KEY.trim().length > 10) {
+                try {
+                    const medContext = currentMedicationOrder ? `Y lệnh: ${currentMedicationOrder.drug_name} (${currentMedicationOrder.form_name}), liều: ${currentMedicationOrder.dose}, đường: ${currentMedicationOrder.route}.` : "";
+                    const prompt = `
+Bạn là Giám đốc đào tạo trạm thi OSCE ĐHYD TP.HCM. Hãy tạo NGẪU NHIÊN một tình huống lâm sàng và BỆNH NHÂN MÔ PHỎNG cho: "${skill.name}". ${medContext}
+Yêu cầu JSON:
+- name: Họ tên người Việt Nam
+- age: Tuổi (20 - 75)
+- gender: "Nam" hoặc "Nữ"
+- room_bed: Số phòng/giường
+- address: Nơi ở (Quận/Huyện, Tỉnh/TP)
+- occupation: Công việc
+- chronic_diseases: 99% để là "Không"
+- allergies: 99% để là "Không"
+- scenario: Tóm tắt bệnh cảnh 1-2 câu
+- psychology: Tâm lý
+- first_words: Lời chào đầu tiên
+Trả về JSON duy nhất.`;
+
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                    const res = await fetch(url, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contents: [{ role: "user", parts: [{ text: prompt }] }],
+                            generationConfig: { temperature: 0.8, responseMimeType: "application/json" }
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const parsed = safeParseJSON(data.candidates?.[0]?.content?.parts?.[0]?.text);
+                        if (parsed) return parsed;
+                    }
+                } catch (e) {
+                    console.warn("Dùng bộ sinh Offline:", e);
+                }
+            }
+
+            const firstNames = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Huỳnh", "Phan", "Vũ", "Đặng", "Bùi"];
+            const midMen = ["Văn", "Hữu", "Đức", "Minh", "Quốc", "Thanh", "Tuấn"];
+            const midWomen = ["Thị", "Ngọc", "Thanh", "Mai", "Phương", "Thu", "Hồng"];
+            const lastMen = ["Nam", "Bình", "Hùng", "Cường", "Dũng", "Tâm", "Hải", "Tuấn"];
+            const lastWomen = ["Lan", "Hoa", "Hương", "Hà", "Trang", "Thảo", "Yến", "Mai"];
+
+            const isFemale = Math.random() > 0.5;
+            const age = Math.floor(Math.random() * 45) + 22;
+            const fullName = `${firstNames[Math.floor(Math.random()*firstNames.length)]} ${isFemale ? midWomen[Math.floor(Math.random()*midWomen.length)] : midMen[Math.floor(Math.random()*midMen.length)]} ${isFemale ? lastWomen[Math.floor(Math.random()*lastWomen.length)] : lastMen[Math.floor(Math.random()*lastMen.length)]}`;
+            const roomBed = `Phòng ${Math.floor(Math.random()*4)+2}0${Math.floor(Math.random()*9)+1} - Giường ${Math.floor(Math.random()*12)+1}`;
+
+            const addresses = ["Quận 5, TP.HCM", "Quận 10, TP.HCM", "TP. Thủ Đức, TP.HCM", "Quận Tân Bình, TP.HCM", "TP. Biên Hòa, Đồng Nai", "TP. Thuận An, Bình Dương"];
+            const occupations = ["Giáo viên", "Nhân viên văn phòng", "Kỹ sư", "Kinh doanh tự do", "Hưu trí", "Tài xế", "Nội trợ"];
+
+            const hasChronic = Math.random() < 0.01;
+            const chronicDisease = hasChronic ? "Tăng huyết áp độ 1" : "Không";
+
+            const hasAllergy = Math.random() < 0.01;
+            const allergy = hasAllergy ? "Dị ứng Penicillin" : "Không";
+
+            let scenarioText = "";
+            let firstWords = "";
+
+            if (currentMedicationOrder) {
+                scenarioText = `Bệnh nhân đang nằm viện điều trị, bác sĩ chỉ định thực hiện y lệnh: ${currentMedicationOrder.drug_name} (${currentMedicationOrder.form_name}), liều: ${currentMedicationOrder.dose}, đường dùng: ${currentMedicationOrder.route}.`;
+                firstWords = `Chào điều dưỡng, hôm nay tiêm thuốc ${currentMedicationOrder.drug_name} cho tôi phải không? Thuốc này tiêm có đau lắm không điều dưỡng?`;
+            } else if (skill.id === "cat_chi_vet_khau") {
+                const sampleScenarios = skill.scenarios || [
+                    "Bệnh nhân nam, 45 tuổi, mổ nội soi cắt ruột thừa ngày thứ 7. Vết mổ khô, lành tốt, không sưng đỏ. Bác sĩ chỉ định cắt chỉ vết khâu.",
+                    "Bệnh nhân nữ, 30 tuổi, khâu vết thương rách da cẳng chân ngày thứ 10. Bác sĩ chỉ định cắt chỉ.",
+                    "Bệnh nhân nam, 60 tuổi, mổ thoát vị bẹn ngày thứ 8. Bác sĩ chỉ định cắt chỉ ngắt quãng."
+                ];
+                scenarioText = sampleScenarios[Math.floor(Math.random() * sampleScenarios.length)];
+                firstWords = `Chào bác sĩ, hôm nay tôi được cắt chỉ vết mổ phải không ạ? Nhìn mấy mối chỉ cũng khô ráo rồi nhưng hơi lo bị nhói, bác sĩ làm nhẹ tay giúp tôi nhé...`;
+            } else if (skill.id === "thay_bang_vet_thuong") {
+                scenarioText = `Bệnh nhân mổ ruột thừa ngày thứ 3, vết mổ khô, bác sĩ chỉ định thay băng vết thương.`;
+                firstWords = `Chào bác sĩ, hôm nay thay băng vết mổ cho tôi phải không ạ? Nhờ bác sĩ làm nhẹ tay giúp tôi với nhé.`;
+            } else if (skill.id === "dat_thong_mui_da_day") {
+                scenarioText = `Bệnh nhân có chỉ định đặt ống thông mũi - dạ dày dẫn lưu theo dõi.`;
+                firstWords = `Chào bác sĩ, tôi nghe nói phải luồn ống từ mũi xuống bao tử hả bác sĩ? Nghe sợ quá...`;
+            } else if (skill.id === "bls_cpr") {
+                scenarioText = `Nạn nhân đột ngột bất tỉnh trên sàn gạch hành lang bệnh viện, ngừng thở ngừng tim.`;
+                firstWords = `(Nạn nhân nằm bất tỉnh, không cử động, mắt nhắm nghiền)`;
+            } else {
+                scenarioText = `Bệnh nhân được chỉ định thực hiện thủ thuật: ${skill.name}.`;
+                firstWords = `Chào bác sĩ, tôi đã sẵn sàng thực hiện thủ thuật rồi ạ.`;
+            }
+
+            return {
+                name: fullName,
+                age: age,
+                gender: isFemale ? "Nữ" : "Nam",
+                room_bed: roomBed,
+                address: addresses[Math.floor(Math.random() * addresses.length)],
+                occupation: occupations[Math.floor(Math.random() * occupations.length)],
+                chronic_diseases: chronicDisease,
+                allergies: allergy,
+                scenario: scenarioText,
+                psychology: "Hợp tác tốt, hơi lo lắng nhưng tin tưởng nhân viên y tế",
+                first_words: firstWords
+            };
+        }
+
+        async function startPractice(catId, skillId) {
+            try {
+                const category = skillsData.categories.find(c => c.id === catId);
+                if (!category) return;
+                currentSkill = category.skills.find(s => s.id === skillId);
+                if (!currentSkill) return;
+                currentSkill.categoryTitle = category.title;
+
+                userActions = [];
+                userErrors = [];
+                chatHistory = [];
+                timeLeft = 360;
+
+                document.getElementById('practice-skill-category').innerText = currentSkill.categoryTitle;
+                document.getElementById('practice-skill-title').innerText = currentSkill.name;
+                document.getElementById('patient-badge-info').innerText = "Đang khởi tạo...";
+                document.getElementById('patient-address').innerText = "...";
+                document.getElementById('patient-occupation').innerText = "...";
+                document.getElementById('practice-scenario').innerText = "Đang tạo hồ sơ bệnh án & y lệnh thuốc...";
+                document.getElementById('chat-messages').innerHTML = '';
+                document.getElementById('user-input').value = '';
+
+                showScreen('screen-practice');
+
+                currentPatient = await generatePatientAndScenario(currentSkill);
+
+                activeChecklist = buildDynamicInjectionChecklist(currentSkill, currentMedicationOrder);
+                updateStepCounter();
+
+                const medBanner = document.getElementById('medication-order-banner');
+                if (currentMedicationOrder) {
+                    medBanner.classList.remove('hidden');
+                    document.getElementById('medication-name-dose').innerText = `${currentMedicationOrder.drug_name} - Liều: ${currentMedicationOrder.dose}`;
+                    document.getElementById('medication-type-badge').innerText = `${currentMedicationOrder.form_name} • ${currentMedicationOrder.route}`;
+                    document.getElementById('medication-prep-hint').innerText = `💡 ${currentMedicationOrder.instructions}`;
+                } else {
+                    medBanner.classList.add('hidden');
+                }
+
+                document.getElementById('patient-badge-info').innerText = `${currentPatient.name} (${currentPatient.gender}, ${currentPatient.age}t) - ${currentPatient.room_bed}`;
+                document.getElementById('patient-address').innerText = currentPatient.address || "TP.HCM";
+                document.getElementById('patient-occupation').innerText = currentPatient.occupation || "Tự do";
+                
+                const chronicEl = document.getElementById('patient-chronic-badge');
+                if (currentPatient.chronic_diseases && currentPatient.chronic_diseases !== "Không") {
+                    chronicEl.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300";
+                    chronicEl.innerText = `Bệnh mạn: ${currentPatient.chronic_diseases}`;
+                } else {
+                    chronicEl.className = "px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    chronicEl.innerText = "Bệnh mạn tính: Không";
+                }
+
+                const allergyEl = document.getElementById('patient-allergy-badge');
+                if (currentPatient.allergies && currentPatient.allergies !== "Không") {
+                    allergyEl.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-900 border border-rose-300";
+                    allergyEl.innerText = `Dị ứng: ${currentPatient.allergies}`;
+                } else {
+                    allergyEl.className = "px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    allergyEl.innerText = "Dị ứng: Không";
+                }
+
+                document.getElementById('patient-psychology').innerText = `• Tâm lý: ${currentPatient.psychology}`;
+                document.getElementById('practice-scenario').innerText = currentPatient.scenario;
+
+                let examinerGreeting = `Chào bạn! Tôi là Giám khảo trạm thi: <strong>${currentSkill.name}</strong>.<br>`;
+                if (currentMedicationOrder) {
+                    examinerGreeting += `<strong>Y lệnh bác sĩ:</strong> <em>${currentMedicationOrder.drug_name}</em> (${currentMedicationOrder.form_name}), liều: <em>${currentMedicationOrder.dose}</em>, đường: <em>${currentMedicationOrder.route}</em>.<br>Bảng kiểm gồm <strong>${activeChecklist.length} bước</strong>. Đồng hồ 6 phút bắt đầu!`;
+                } else {
+                    examinerGreeting += `Bệnh nhân và dụng cụ đã sẵn sàng. Bạn có 6 phút để hoàn thành bảng kiểm gồm <strong>${activeChecklist.length} bước</strong>. Mời bạn bắt đầu!`;
+                }
+                appendChatMessage("examiner", examinerGreeting);
+                appendChatMessage("patient", currentPatient.first_words);
+
+                startTimer();
+
+                setTimeout(() => {
+                    const inp = document.getElementById('user-input');
+                    if (inp) inp.focus();
+                }, 300);
+            } catch (err) {
+                console.error("Lỗi startPractice:", err);
+                alert("Đã xảy ra lỗi khởi tạo: " + err.message);
+            }
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("ĐÃ HẾT 6 PHÚT! Hệ thống tự động thu bài và chuyển sang bảng chấm điểm OSCE.");
+                    executeFinishExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            const text = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            const displayEl = document.getElementById('timer-display');
+            const boxEl = document.getElementById('timer-box');
+            if (displayEl) displayEl.innerText = text;
+
+            if (boxEl) {
+                if (timeLeft <= 60) {
+                    boxEl.className = "flex items-center gap-2 bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-300 font-mono font-bold text-sm sm:text-base text-rose-700 shadow-xs animate-pulse";
+                } else {
+                    boxEl.className = "flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-300 font-mono font-bold text-sm sm:text-base text-slate-700 shadow-xs";
+                }
+            }
+        }
+
+        function updateStepCounter() {
+            const el = document.getElementById('step-progress-counter');
+            if (el && activeChecklist && activeChecklist.length > 0) {
+                el.innerText = `Đã ghi nhận: ${userActions.length}/${activeChecklist.length} bước`;
+            }
+        }
+
+        function openFinishConfirmModal() {
+            document.getElementById('confirm-finish-modal').classList.remove('hidden');
+        }
+
+        function closeFinishConfirmModal() {
+            document.getElementById('confirm-finish-modal').classList.add('hidden');
+        }
+
+        function executeFinishExam() {
+            closeFinishConfirmModal();
+            finishSkill();
+        }
+
+        function appendChatMessage(role, htmlContent) {
+            const container = document.getElementById('chat-messages');
+            if (!container) return;
+            const msgDiv = document.createElement('div');
+
+            if (role === "user") {
+                msgDiv.className = "flex justify-end";
+                msgDiv.innerHTML = `
+                    <div class="max-w-[85%] sm:max-w-[75%] bg-teal-600 text-white rounded-2xl rounded-br-xs px-4 py-3 text-sm leading-relaxed shadow-2xs">
+                        <div class="text-[10px] text-teal-200 font-bold mb-1 uppercase tracking-wider text-right">Bạn (Sinh viên y khoa)</div>
+                        <div>${htmlContent}</div>
+                    </div>
+                `;
+            } 
+            else if (role === "patient") {
+                const pName = currentPatient ? currentPatient.name : "Bệnh nhân";
+                msgDiv.className = "flex justify-start";
+                msgDiv.innerHTML = `
+                    <div class="max-w-[85%] sm:max-w-[75%] bg-amber-50/90 border border-amber-200 text-amber-950 rounded-2xl rounded-bl-xs px-4 py-3 text-sm leading-relaxed shadow-2xs">
+                        <div class="text-[10px] text-amber-700 font-bold mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-hospital-user text-amber-600"></i> ${pName} (Bệnh nhân)
+                        </div>
+                        <div>${htmlContent}</div>
+                    </div>
+                `;
+            } 
+            else if (role === "examiner") {
+                msgDiv.className = "flex justify-start";
+                msgDiv.innerHTML = `
+                    <div class="max-w-[85%] sm:max-w-[75%] bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-bl-xs px-4 py-3 text-sm leading-relaxed shadow-2xs">
+                        <div class="text-[10px] text-indigo-700 font-bold mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-doctor text-indigo-600"></i> Giám khảo OSCE
+                        </div>
+                        <div>${htmlContent}</div>
+                    </div>
+                `;
+            }
+
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+            chatHistory.push({ role, text: htmlContent });
+        }
+
+        async function handleSendMessage(event) {
+            event.preventDefault();
+            const inputEl = document.getElementById('user-input');
+            const userText = inputEl.value.trim();
+            if (!userText) return;
+
+            appendChatMessage("user", userText);
+            inputEl.value = '';
+
+            const typingEl = document.getElementById('typing-indicator');
+            const sendBtn = document.getElementById('btn-send');
+            if (typingEl) typingEl.classList.remove('hidden');
+            if (sendBtn) sendBtn.disabled = true;
+
+            try {
+                let evalResult = null;
+
+                if (GEMINI_API_KEY && GEMINI_API_KEY.trim().length > 10) {
+                    evalResult = await callMultiAgentGemini(userText, activeChecklist, currentPatient, currentMedicationOrder);
+                } else {
+                    evalResult = evaluateOfflineMultiAgent(userText, activeChecklist, currentPatient, currentMedicationOrder);
+                }
+
+                await processMultiAgentResponses(evalResult, userText);
+
+            } catch (err) {
+                console.error("Lỗi phản hồi:", err);
+                const fallback = evaluateOfflineMultiAgent(userText, activeChecklist, currentPatient, currentMedicationOrder);
+                await processMultiAgentResponses(fallback, userText);
+            } finally {
+                if (typingEl) typingEl.classList.add('hidden');
+                if (sendBtn) sendBtn.disabled = false;
+                updateStepCounter();
+                inputEl.focus();
+            }
+        }
+
+        async function processMultiAgentResponses(res, originalUserText) {
+            if (!res) return;
+            if (res.patient_dialogue) {
+                appendChatMessage("patient", res.patient_dialogue);
+            }
+
+            if (res.patient_dialogue && res.examiner_feedback) {
+                await new Promise(r => setTimeout(r, 400));
+            }
+
+            if (res.case_type === "INADEQUATE") {
+                appendChatMessage("examiner", `<span class="text-amber-700 font-medium">${res.examiner_feedback}</span>`);
+            } 
+            else if (res.case_type === "ERROR") {
+                userErrors.push({
+                    user_text: originalUserText,
+                    reason: res.detected_error_description || "Hành động sai kỹ thuật / phạm quy an toàn.",
+                    timestamp: 360 - timeLeft
+                });
+                if (res.examiner_feedback) {
+                    appendChatMessage("examiner", res.examiner_feedback);
+                }
+            } 
+            else if (res.case_type === "ADEQUATE") {
+                const stepObj = activeChecklist.find(s => s.step_id === res.matched_step_id);
+                const alreadyDone = userActions.some(a => a.step_id === res.matched_step_id);
+                if (!alreadyDone) {
+                    userActions.push({
+                        step_id: res.matched_step_id,
+                        standard_action: stepObj ? stepObj.standard_action : `Bước #${res.matched_step_id}`,
+                        user_text: originalUserText,
+                        timestamp: 360 - timeLeft
+                    });
+                }
+                if (res.examiner_feedback) {
+                    appendChatMessage("examiner", res.examiner_feedback);
+                }
+            } 
+            else {
+                if (res.examiner_feedback) {
+                    appendChatMessage("examiner", res.examiner_feedback);
+                }
+            }
+        }
+
+        async function callMultiAgentGemini(userText, checklist, patient, medOrder) {
+            const medInfo = medOrder ? `
+- Y LỆNH BÁC SĨ: ${medOrder.drug_name} - ${medOrder.dose} (${medOrder.form_name}, đường: ${medOrder.route}).
+` : "";
+
+            const systemPrompt = `
+Bạn là Giám khảo & Bệnh nhân trong phòng thi OSCE ĐHYD TP.HCM:
+${medInfo}
+Bệnh nhân: ${patient.name}, ${patient.age}t. Nơi ở: ${patient.address}. Nghề nghiệp: ${patient.occupation}. Bệnh mạn: ${patient.chronic_diseases}. Dị ứng: ${patient.allergies}.
+Checklist kỹ thuật:
+${JSON.stringify(checklist, null, 2)}
+
+Trả về JSON duy nhất:
+{
+  "patient_dialogue": "Lời nói bệnh nhân hoặc null",
+  "examiner_feedback": "Nhận xét của giám khảo hoặc null",
+  "case_type": "ADEQUATE" | "INADEQUATE" | "ERROR" | "IRRELEVANT",
+  "matched_step_id": number | null,
+  "detected_error_description": "Mô tả lỗi nếu là ERROR"
+}`;
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ role: "user", parts: [{ text: `Sinh viên: "${userText}"` }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Gemini API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return safeParseJSON(data.candidates?.[0]?.content?.parts?.[0]?.text);
+        }
+
+        function evaluateOfflineMultiAgent(userText, checklist, patient, medOrder) {
+            const lower = userText.toLowerCase();
+            let patientReply = null;
+            let examinerReply = "Đã ghi nhận thao tác. Bạn làm gì tiếp theo?";
+            let caseType = "IRRELEVANT";
+            let matchedId = null;
+
+            if (lower.includes("chào") || lower.includes("tên") || lower.includes("tuổi")) {
+                patientReply = `Dạ chào bác sĩ! Tôi tên là ${patient.name}, năm nay ${patient.age} tuổi ạ.`;
+            } else if (lower.includes("dị ứng")) {
+                patientReply = (patient.allergies && patient.allergies !== "Không") 
+                    ? `Dạ tôi có tiền sử bị ${patient.allergies} đó bác sĩ!` 
+                    : `Dạ từ trước đến giờ tôi không bị dị ứng thuốc hay đồ ăn gì cả.`;
+            } else if (lower.includes("tiền căn") || lower.includes("bệnh mạn")) {
+                patientReply = (patient.chronic_diseases && patient.chronic_diseases !== "Không") 
+                    ? `Dạ tôi đang điều trị ${patient.chronic_diseases} ngoại trú ạ.` 
+                    : `Dạ trước giờ tôi khỏe mạnh bình thường, không có bệnh mạn tính gì ạ.`;
+            } else if (currentSkill && currentSkill.id === "cat_chi_vet_khau") {
+                if (lower.includes("cắt chỉ") || lower.includes("nhíp") || lower.includes("kéo")) {
+                    patientReply = `Ái chà, hơi thốn nhói một chút bác sĩ ơi, nhưng tôi chịu được...`;
+                } else if (lower.includes("báo xong") || lower.includes("rút hết") || lower.includes("xong rồi")) {
+                    patientReply = `Dạ rút hết chỉ ra thấy nhẹ nhõm hẳn, không còn cảm giác vướng cộm da nữa rồi, cảm ơn bác sĩ nhiều!`;
+                }
+            } else if (lower.includes("tiêm") || lower.includes("đâm kim")) {
+                patientReply = `Ái chà hơi nhói và buốt một chút bác sĩ ơi...`;
+            }
+
+            const dangerousPatterns = [
+                { pattern: /chỉ bẩn chui xuống|rút.*ngược/i, reason: "Rút phần chỉ dính bẩn lộ trên da chui qua mô dưới da gây nguy cơ nhiễm trùng vết khâu." },
+                { pattern: /cắt cả hai nhánh|cắt đứt cả 2/i, reason: "Cắt cả hai nhánh của nút thắt khiến mối chỉ bị đứt đôi, đoạn chỉ chìm dưới da không thể rút ra được." },
+                { pattern: /cồn 70.*(sát khuẩn lại|chân chỉ|lòng vết thương)/i, reason: "Sát khuẩn lại vết mổ bằng cồn 70 độ gây bỏng rát đau đớn dữ dội cho người bệnh." },
+                { pattern: /không tháo garo|chưa tháo garô|giữ nguyên garo/i, reason: "Bơm thuốc tĩnh mạch khi chưa giải phóng garô." },
+                { pattern: /thấy máu.*bơm luôn|có máu.*vẫn bơm/i, reason: "Thấy máu trào vào bơm tiêm khi tiêm bắp nhưng vẫn tiếp tục bơm thuốc." },
+                { pattern: /day nốt sẩn|ấn mạnh nốt sẩn/i, reason: "Day ấn bông cồn vào nốt sẩn tiêm trong da làm sai lệch kết quả đọc test." },
+                { pattern: /kềm vô khuẩn.*(gỡ băng|tháo băng|băng bẩn)/i, reason: "Dùng kềm vô khuẩn trong mâm để tháo băng bẩn làm nhiễm bẩn kềm và mâm." }
+            ];
+
+            for (const item of dangerousPatterns) {
+                if (item.pattern.test(lower)) {
+                    return {
+                        patient_dialogue: "Ủa sao tôi thấy đau bất thường vậy bác sĩ ơi!...",
+                        examiner_feedback: "Đã ghi nhận thao tác của bạn. Bạn xử trí thế nào tiếp theo?",
+                        case_type: "ERROR",
+                        matched_step_id: null,
+                        detected_error_description: item.reason
+                    };
+                }
+            }
+
+            let bestMatchStep = null;
+            let matchedKeywordsCount = 0;
+
+            for (const step of checklist) {
+                const kwMatches = (step.required_keywords || []).filter(kw => lower.includes(kw.toLowerCase()));
+                if (kwMatches.length > matchedKeywordsCount) {
+                    matchedKeywordsCount = kwMatches.length;
+                    bestMatchStep = step;
+                }
+            }
+
+            if (bestMatchStep) {
+                if (matchedKeywordsCount < 2 && (bestMatchStep.required_keywords || []).length >= 3) {
+                    caseType = "INADEQUATE";
+                    matchedId = bestMatchStep.step_id;
+                    examinerReply = bestMatchStep.clarification_prompt;
+                } else {
+                    caseType = "ADEQUATE";
+                    matchedId = bestMatchStep.step_id;
+                    examinerReply = "Thao tác chuẩn xác. Bạn làm bước gì tiếp theo?";
+                }
+            }
+
+            return {
+                patient_dialogue: patientReply,
+                examiner_feedback: examinerReply,
+                case_type: caseType,
+                matched_step_id: matchedId,
+                detected_error_description: null
+            };
+        }
+
+        function finishSkill() {
+            try {
+                clearInterval(timerInterval);
+                const timeTakenSec = 360 - timeLeft;
+                const mins = Math.floor(timeTakenSec / 60);
+                const secs = timeTakenSec % 60;
+                const timeFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                const evalReport = calculateOSCEScore(activeChecklist, userActions, userErrors);
+                renderResultScreen(evalReport, timeFormatted);
+
+                showScreen('screen-result');
+
+            } catch (err) {
+                console.error("Lỗi khi kết thúc bài thi:", err);
+                alert("Đã xảy ra lỗi khi tính điểm: " + err.message);
+            }
+        }
+
+        function calculateOSCEScore(checklist, actionsDone, errorsList) {
+            if (!checklist || checklist.length === 0) {
+                return { finalScore: 0, correctOrderCount: 0, wrongOrderCount: 0, missedCount: 0, errorsCount: 0, detailedTable: [], errorsList: [] };
+            }
+
+            const totalSteps = checklist.length;
+            const userStepIds = (actionsDone || []).map(a => a.step_id).filter(id => id !== null && id !== undefined);
+
+            const lisStepsSet = new Set(computeLIS(userStepIds));
+
+            let correctOrderCount = 0;
+            let wrongOrderCount = 0;
+            let missedCount = 0;
+            const detailedTable = [];
+
+            checklist.forEach((step, idx) => {
+                const sId = step.step_id;
+                const sAction = step.standard_action;
+                const foundAction = (actionsDone || []).find(a => a.step_id === sId);
+
+                if (!foundAction) {
+                    missedCount++;
+                    detailedTable.push({
+                        step_id: sId,
+                        standard_action: sAction,
+                        status: "MISSED",
+                        user_text: "— (Chưa thực hiện)",
+                        note: "Bỏ sót hoàn toàn bước này."
+                    });
+                } else {
+                    if (lisStepsSet.has(sId)) {
+                        correctOrderCount++;
+                        detailedTable.push({
+                            step_id: sId,
+                            standard_action: sAction,
+                            status: "CORRECT",
+                            user_text: foundAction.user_text,
+                            note: `Thực hiện đúng chuẩn tự và đủ ý.`
+                        });
+                    } else {
+                        wrongOrderCount++;
+                        const prevActionText = idx > 0 ? checklist[idx - 1].standard_action : 'ở đầu quy trình';
+                        detailedTable.push({
+                            step_id: sId,
+                            standard_action: sAction,
+                            status: "WRONG_ORDER",
+                            user_text: foundAction.user_text,
+                            note: `Làm đảo lộn thứ tự (Đáng lẽ làm sau: '${prevActionText}').`
+                        });
+                    }
+                }
+            });
+
+            const baseStepPoints = 100 / totalSteps;
+            let rawScore = (correctOrderCount * baseStepPoints) + (wrongOrderCount * (baseStepPoints * 0.5));
+            rawScore -= ((errorsList || []).length * (baseStepPoints * 0.25));
+
+            if (rawScore < 0) rawScore = 0;
+            const finalScore = Math.min(100, Math.round(rawScore));
+
+            return {
+                finalScore,
+                correctOrderCount,
+                wrongOrderCount,
+                missedCount,
+                errorsCount: (errorsList || []).length,
+                detailedTable,
+                errorsList: errorsList || []
+            };
+        }
+
+        function computeLIS(arr) {
+            if (!arr || arr.length === 0) return [];
+            const n = arr.length;
+            const dp = Array(n).fill(1);
+            const parent = Array(n).fill(-1);
+
+            let maxLen = 1;
+            let bestEnd = 0;
+
+            for (let i = 1; i < n; i++) {
+                for (let j = 0; j < i; j++) {
+                    if (arr[j] < arr[i] && dp[j] + 1 > dp[i]) {
+                        dp[i] = dp[j] + 1;
+                        parent[i] = j;
+                    }
+                }
+                if (dp[i] > maxLen) {
+                    maxLen = dp[i];
+                    bestEnd = i;
+                }
+            }
+
+            const result = [];
+            let curr = bestEnd;
+            while (curr !== -1) {
+                result.push(arr[curr]);
+                curr = parent[curr];
+            }
+            return result.reverse();
+        }
+
+        function renderResultScreen(report, timeFormatted) {
+            let title = currentSkill ? currentSkill.name : "Kỹ năng lâm sàng";
+            if (currentMedicationOrder) {
+                title += ` (Y lệnh: ${currentMedicationOrder.drug_name} - ${currentMedicationOrder.form_name})`;
+            }
+            document.getElementById('result-skill-title').innerText = title;
+            document.getElementById('result-time-taken').innerText = timeFormatted;
+            document.getElementById('result-score-percent').innerText = `${report.finalScore}%`;
+
+            const badge = document.getElementById('result-status-badge');
+            const summary = document.getElementById('result-feedback-summary');
+
+            if (report.finalScore >= 80) {
+                badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800";
+                badge.innerText = "Đạt Tiêu Chuẩn Giỏi";
+                summary.innerText = "Bạn nắm rất vững quy trình bảng kiểm, kỹ thuật chuẩn xác, giao tiếp ân cần với người bệnh và đảm bảo an toàn lâm sàng.";
+            } else if (report.finalScore >= 50) {
+                badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800";
+                badge.innerText = "Cần Rèn Luyện Thêm";
+                summary.innerText = "Bạn nhớ được các thao tác cốt lõi nhưng còn đảo lộn trình tự hoặc thao tác chuẩn bị chưa thật sự thuần thục.";
+            } else {
+                badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800";
+                badge.innerText = "Chưa Đạt";
+                summary.innerText = "Bỏ sót các bước vô khuẩn quan trọng hoặc vi phạm quy tắc an toàn người bệnh. Hãy luyện tập lại trạm này kỹ hơn.";
+            }
+
+            document.getElementById('stat-correct-order').innerText = report.correctOrderCount;
+            document.getElementById('stat-wrong-order').innerText = report.wrongOrderCount;
+            document.getElementById('stat-missed').innerText = report.missedCount;
+            document.getElementById('stat-errors').innerText = report.errorsCount;
+
+            const tbody = document.getElementById('detailed-checklist-body');
+            tbody.innerHTML = '';
+
+            report.detailedTable.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+
+                let statusBadge = "";
+                if (row.status === "CORRECT") {
+                    statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check"></i> Đúng chuẩn</span>`;
+                } else if (row.status === "WRONG_ORDER") {
+                    statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800"><i class="fa-solid fa-arrow-right-arrow-left"></i> Sai thứ tự</span>`;
+                } else {
+                    statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800"><i class="fa-solid fa-xmark"></i> Bỏ sót</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center font-bold text-slate-400">${row.step_id}</td>
+                    <td class="py-3 px-4 font-medium text-slate-900">${row.standard_action}</td>
+                    <td class="py-3 px-4">${statusBadge}</td>
+                    <td class="py-3 px-4 text-xs text-slate-600">
+                        <div class="font-medium text-slate-800 italic mb-0.5">"${row.user_text}"</div>
+                        <div class="text-slate-500">${row.note}</div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const errBox = document.getElementById('error-report-container');
+            const errList = document.getElementById('error-list');
+
+            if (report.errorsList && report.errorsList.length > 0) {
+                errBox.classList.remove('hidden');
+                errList.innerHTML = report.errorsList.map(err => `
+                    <li>
+                        <strong>"${err.user_text}"</strong>: <span class="text-rose-950">${err.reason}</span>
+                    </li>
+                `).join('');
+            } else {
+                errBox.classList.add('hidden');
+            }
+        }
+
+        function retryCurrentSkill() {
+            if (currentSkill) {
+                const cat = skillsData.categories.find(c => c.skills.some(s => s.id === currentSkill.id));
+                if (cat) startPractice(cat.id, currentSkill.id);
+            }
+        }
+    </script>
+</body>
+</html>

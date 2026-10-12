@@ -22,7 +22,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased">
 
-    <!-- HEADER -->
+    <!-- HEADER TOÀN TRANG -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -31,7 +31,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-base sm:text-lg text-slate-900 leading-tight">OSCE Multi-Agent Simulation</h1>
-                    <p class="text-xs text-slate-500 font-medium">Trung tâm Huấn luyện Kỹ năng Lâm sàng (ATCS) - ĐHYD TP.HCM</p>
+                    <p class="text-xs text-slate-500 font-medium">Trung tâm Huấn luyện Kỹ năng Lâm sàng (ATCS)</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -43,7 +43,6 @@
         </div>
     </header>
 
-    <!-- CONTAINER CHÍNH -->
     <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-6 flex flex-col">
 
         <!-- MÀN HÌNH 1: HOME -->
@@ -53,7 +52,7 @@
                     <span class="bg-teal-500/30 text-teal-100 text-xs uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border border-teal-400/30">Mô phỏng lâm sàng tương tác 3 bên</span>
                     <h2 class="text-2xl sm:text-3xl font-black mt-3 mb-2">Trạm Thi OSCE Tích Hợp Bệnh Nhân Ảo</h2>
                     <p class="text-teal-100 text-sm sm:text-base leading-relaxed">
-                        Hệ thống tự động sinh hồ sơ bệnh nhân, bệnh cảnh và <strong>Y lệnh thuốc (Thuốc ống, Thuốc lọ dung dịch, Lọ bột pha tiêm)</strong>. Bảng kiểm sẽ tự động thích ứng với quy trình rút/pha từng dạng thuốc cụ thể!
+                        Hệ thống tự động sinh hồ sơ bệnh nhân, bệnh cảnh và <strong>Y lệnh thuốc (Thuốc ống, Thuốc lọ dung dịch, Lọ bột pha tiêm, Truyền dịch)</strong>. Bảng kiểm sẽ tự động thích ứng với quy trình rút/pha từng dạng thuốc cụ thể!
                     </p>
                 </div>
                 <i class="fa-solid fa-stethoscope text-white/10 absolute right-6 bottom-2 text-9xl pointer-events-none"></i>
@@ -64,7 +63,6 @@
 
         <!-- MÀN HÌNH 2: PHÒNG THI CHAT -->
         <section id="screen-practice" class="flex-1 flex-col h-[calc(100vh-6.5rem)] max-h-[850px] bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" style="display: none;">
-            <!-- Top bar -->
             <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-lg">
@@ -87,7 +85,6 @@
                 </div>
             </div>
 
-            <!-- Banner Hồ Sơ Bệnh Nhân & Y Lệnh Thuốc -->
             <div class="bg-gradient-to-r from-amber-50 to-orange-50/70 border-b border-amber-200/90 px-4 py-2.5 text-xs text-amber-950 shrink-0 space-y-1.5">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex flex-wrap items-center gap-2">
@@ -108,7 +105,6 @@
                     </div>
                 </div>
 
-                <!-- Thẻ Y Lệnh Thuốc (nếu là trạm tiêm) -->
                 <div id="medication-order-banner" class="hidden p-2 bg-teal-50 border border-teal-200 rounded-lg flex flex-wrap items-center justify-between gap-2 text-teal-950">
                     <div class="flex items-center gap-2 font-medium">
                         <span class="px-2 py-0.5 rounded bg-teal-600 text-white font-bold text-[10px] uppercase tracking-wide">Y Lệnh Bác Sĩ</span>
@@ -131,7 +127,6 @@
             <!-- Khung Chat -->
             <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 custom-scroll bg-slate-50/40"></div>
 
-            <!-- Typing indicator -->
             <div id="typing-indicator" class="hidden px-5 py-2 shrink-0">
                 <div class="inline-flex items-center gap-1.5 bg-slate-200/80 text-slate-600 px-3.5 py-2 rounded-2xl rounded-bl-xs text-xs">
                     <span class="w-1.5 h-1.5 rounded-full bg-slate-500 typing-dot"></span>
@@ -311,9 +306,11 @@
         const medicationOrdersDatabase = {
             tiem_bap: [
                 { drug_name: "Ceftriaxone 1g", form_type: "powder_vial", form_name: "Lọ thuốc bột pha tiêm", dose: "1g (pha với 3.5ml Lidocain 1% hoặc Nước cất)", route: "Tiêm bắp sâu (IM)", instructions: "Pha loãng lọ bột bằng dung môi, lắc tan hoàn toàn trước khi rút tiêm." },
+                { drug_name: "Diclofenac", form_type: "ampoule", form_name: "Thuốc ống (dung dịch nước)", dose: "75mg / 3ml (1 ống)", route: "Tiêm bắp sâu (IM)", instructions: "Gõ nhẹ đầu ống, lót gạc bẻ ống và rút thuốc trực tiếp." },
                 { drug_name: "Spasfon (Phloroglucinol)", form_type: "ampoule", form_name: "Thuốc ống (dung dịch nước)", dose: "40mg / 4ml (1 ống)", route: "Tiêm bắp sâu (IM)", instructions: "Gõ nhẹ đầu ống, lót gạc bẻ ống và rút thuốc trực tiếp." }
             ],
             tiem_tinh_mach: [
+                { drug_name: "Calci Clorid", form_type: "ampoule", form_name: "Thuốc ống (dung dịch nước)", dose: "0.5g / 5ml (1 ống)", route: "Tiêm tĩnh mạch chậm (IV)", instructions: "Lót gạc bẻ ống thuốc, rút trọn 5ml tiêm tĩnh mạch rất chậm." },
                 { drug_name: "Omeprazole", form_type: "powder_vial", form_name: "Lọ thuốc bột pha tiêm", dose: "40mg (pha với 10ml NaCl 0.9%)", route: "Tiêm tĩnh mạch chậm (IV)", instructions: "Bơm 10ml NaCl 0.9% vào lọ bột, lắc đều tan trong suốt rồi rút lại bơm tiêm." },
                 { drug_name: "Furosemid (Lasix)", form_type: "ampoule", form_name: "Thuốc ống (dung dịch nước)", dose: "20mg / 2ml (1 ống)", route: "Tiêm tĩnh mạch chậm (IV)", instructions: "Lót gạc bẻ ống thuốc, rút trọn 2ml tiêm tĩnh mạch chậm trong 2 phút." }
             ],
@@ -321,257 +318,1957 @@
                 { drug_name: "Insulin Mixtard 30/70", form_type: "liquid_vial", form_name: "Lọ thuốc (dung dịch/hỗn dịch nước)", dose: "10 UI", route: "Tiêm dưới da (SC)", instructions: "Lăn nhẹ lọ thuốc trong lòng bàn tay, sát khuẩn nút cao su, bơm 10 UI khí vào lọ rồi rút 10 UI thuốc." }
             ],
             tiem_trong_da: [
-                { drug_name: "Dung dịch Penicillin / Ceftriaxone thử phản ứng", form_type: "powder_vial", form_name: "Lọ thuốc bột pha nồng độ test", dose: "0.1 ml (nồng độ thử phản ứng)", route: "Tiêm trong da (ID - Test nội bì)", instructions: "Pha loãng lọ bột theo bậc test, dùng bơm tiêm 1ml rút đúng 0.1ml dung dịch thử." }
+                { drug_name: "Dung dịch Penicillin pha loãng", form_type: "powder_vial", form_name: "Lọ thuốc bột pha nồng độ test", dose: "1/10 ml (nồng độ thử phản ứng)", route: "Tiêm trong da (ID - Test nội bì)", instructions: "Pha loãng lọ bột theo bậc test, dùng bơm tiêm 1ml rút đúng 1/10ml dung dịch thử." }
+            ],
+            tiem_truyen_tinh_mach: [
+                { drug_name: "Natri Clorid 0.9%", form_type: "infusion_bottle", form_name: "Chai dịch truyền 500ml", dose: "500ml", route: "Truyền tĩnh mạch kim luồn", instructions: "Khóa dây truyền, cắm vào chai, bóp bầu đếm giọt 1/2-2/3, đuổi bọt khí." },
+                { drug_name: "Ringer Lactat", form_type: "infusion_bottle", form_name: "Chai dịch truyền 500ml", dose: "500ml", route: "Truyền tĩnh mạch kim luồn", instructions: "Kiểm tra độ trong, đuổi sạch bọt khí trong dây truyền dịch." }
+            ]
+        };
+
+        const withdrawal_steps = {
+            "ampoule": [
+                {
+                    "standard_action": "Kiểm tra tên thuốc, hạn dùng, độ trong; gõ nhẹ đầu ống đuổi thuốc xuống thân ống",
+                    "required_keywords": ["kiểm tra thuốc", "hạn dùng", "gõ nhẹ", "đuổi thuốc xuống", "ống thuốc"],
+                    "clarification_prompt": "Trước khi bẻ ống thuốc, bạn kiểm tra những gì và làm động tác gì để thuốc không đọng ở cổ ống?"
+                },
+                {
+                    "standard_action": "Sát khuẩn cổ ống thuốc, dùng miếng gạc lót bẻ cổ ống thuốc an toàn",
+                    "required_keywords": ["sát khuẩn cổ ống", "miếng gạc", "lót gạc", "bẻ cổ ống", "bẻ ống"],
+                    "clarification_prompt": "Bạn bẻ ống thuốc như thế nào để đảm bảo vô khuẩn và không đứt tay?"
+                },
+                {
+                    "standard_action": "Đưa kim vào ống thuốc rút đúng liều lượng chỉ định (ngửa mặt vát, không chạm mép cắt ống)",
+                    "required_keywords": ["rút thuốc", "đúng liều", "ngửa vát", "không chạm mép", "rút vào bơm"],
+                    "clarification_prompt": "Thao tác đưa kim vào ống rút thuốc như thế nào để tránh nhiễm khuẩn?"
+                }
+            ],
+            "powder_vial": [
+                {
+                    "standard_action": "Mở nắp bảo vệ, sát khuẩn nút cao su lọ thuốc bột và ống dung môi/nước cất",
+                    "required_keywords": ["mở nắp", "sát khuẩn nút cao su", "nút cao su", "ống dung môi", "nước cất"],
+                    "clarification_prompt": "Trước khi cắm kim vào lọ thuốc bột, bạn cần sát khuẩn vị trí nào?"
+                },
+                {
+                    "standard_action": "Bẻ ống dung môi, rút đủ thể tích dung môi và bơm từ từ vào lọ thuốc bột",
+                    "required_keywords": ["rút dung môi", "bơm vào lọ", "dung môi", "nước cất"],
+                    "clarification_prompt": "Bạn lấy dung môi và đưa vào lọ bột như thế nào?"
+                },
+                {
+                    "standard_action": "Lắc nhẹ/xoay tròn lọ thuốc cho bột tan hoàn toàn, sau đó dốc ngược lọ rút đúng liều thuốc đã pha",
+                    "required_keywords": ["lắc tan", "tan hoàn toàn", "dốc ngược", "rút thuốc", "rút đủ liều"],
+                    "clarification_prompt": "Làm thế nào để thuốc tan đều và cách rút thuốc sau khi hòa tan?"
+                }
+            ],
+            "liquid_vial": [
+                {
+                    "standard_action": "Lăn nhẹ lọ thuốc trong lòng bàn tay (nếu là hỗn dịch), sát khuẩn nút cao su lọ thuốc",
+                    "required_keywords": ["lăn nhẹ", "sát khuẩn nút cao su", "nút cao su", "lọ thuốc"],
+                    "clarification_prompt": "Thao tác chuẩn bị lọ thuốc và sát khuẩn nút cao su?"
+                },
+                {
+                    "standard_action": "Bơm một lượng không khí bằng thể tích thuốc cần lấy vào trong lọ thuốc",
+                    "required_keywords": ["bơm khí", "lượng khí", "bằng thể tích", "bơm không khí"],
+                    "clarification_prompt": "Tại sao cần bơm một lượng không khí tương đương vào lọ trước khi rút thuốc dung dịch?"
+                },
+                {
+                    "standard_action": "Dốc ngược lọ thuốc, rút chính xác liều lượng thuốc theo y lệnh",
+                    "required_keywords": ["dốc ngược", "rút thuốc", "chính xác liều", "đúng liều"],
+                    "clarification_prompt": "Tư thế lọ thuốc khi rút dung dịch thuốc ra bơm tiêm?"
+                }
             ]
         };
 
         const skillsData = {
             categories: [
                 {
-                    id: "injection",
-                    title: "1. Kỹ năng tiêm thuốc (Checklist động theo dạng thuốc)",
-                    skills: [
+                    "id": "injection_infusion",
+                    "title": "1. Kỹ năng tiêm thuốc & Tiêm truyền tĩnh mạch",
+                    "skills": [
                         {
-                            id: "tiem_bap",
-                            name: "Tiêm bắp (IM - Cơ delta / 1/4 trên ngoài mông)",
-                            prompt_context: "Quy trình tiêm bắp sâu theo y lệnh thuốc ống hoặc thuốc lọ bột/nước.",
-                            base_checklist: [
-                                { step_id: 1, standard_action: "Đối chiếu người bệnh và kiểm tra 5 đúng theo y lệnh", required_keywords: ["đối chiếu", "5 đúng", "tên", "thuốc", "liều", "đường tiêm", "thời điểm"], clarification_prompt: "Bạn thực hiện đối chiếu và kiểm tra y lệnh như thế nào?" },
-                                { step_id: 2, standard_action: "Vệ sinh tay thường quy và mang khẩu trang", required_keywords: ["vệ sinh tay", "rửa tay", "khẩu trang"], clarification_prompt: "Trước khi chuẩn bị thuốc, bạn xử lý tay và khẩu trang thế nào?" },
-                                { step_id: 6, standard_action: "Đuổi hết bọt khí và thay kim tiêm phù hợp", required_keywords: ["đuổi khí", "bọt khí", "thay kim"], clarification_prompt: "Trước khi đến bên người bệnh, bạn xử lý bọt khí và kim tiêm ra sao?" },
-                                { step_id: 7, standard_action: "Xác định chính xác vị trí tiêm bắp (1/4 trên ngoài mông / cơ delta)", required_keywords: ["vị trí", "1/4 trên ngoài", "mông", "cơ delta"], clarification_prompt: "Mốc giải phẫu xác định vị trí tiêm bắp để an toàn?" },
-                                { step_id: 8, standard_action: "Sát khuẩn da theo đường xoắn ốc từ trong ra ngoài (đường kính >= 5cm)", required_keywords: ["sát khuẩn", "xoắn ốc", "trong ra ngoài", "cồn 70"], clarification_prompt: "Kỹ thuật sát khuẩn da vùng tiêm?" },
-                                { step_id: 9, standard_action: "Căng phẳng da, đâm kim dứt khoát góc 90 độ ngập 2/3 kim", required_keywords: ["căng da", "90 độ", "vuông góc", "ngập 2/3"], clarification_prompt: "Bạn căng da và đâm kim với góc độ bao nhiêu?" },
-                                { step_id: 10, standard_action: "Kéo nhẹ piston kiểm tra chắc chắn không có máu", required_keywords: ["kéo piston", "rút nhẹ", "không có máu"], clarification_prompt: "Thao tác bắt buộc trước khi bơm thuốc vào bắp thịt?" },
-                                { step_id: 11, standard_action: "Bơm thuốc từ từ, rút kim nhanh góc 90 độ và ấn nhẹ gạc khô", required_keywords: ["bơm chậm", "rút nhanh", "90 độ", "gạc khô", "ấn nhẹ"], clarification_prompt: "Tốc độ bơm thuốc và kỹ thuật rút kim?" },
-                                { step_id: 12, standard_action: "Hủy kim vào thùng kháng thủng, vệ sinh tay, dặn dò người bệnh và ghi hồ sơ", required_keywords: ["thùng kháng thủng", "rửa tay", "dặn dò", "ghi hồ sơ"], clarification_prompt: "Bạn kết thúc thủ thuật và hoàn tất việc hành chính nào?" }
-                            ]
-                        },
-                        {
-                            id: "tiem_tinh_mach",
-                            name: "Tiêm tĩnh mạch (IV)",
-                            prompt_context: "Quy trình tiêm thuốc vào tĩnh mạch theo y lệnh thuốc ống hoặc thuốc lọ bột/nước.",
-                            base_checklist: [
-                                { step_id: 1, standard_action: "Đối chiếu người bệnh và kiểm tra 5 đúng theo y lệnh", required_keywords: ["đối chiếu", "5 đúng", "tên", "thuốc", "liều"], clarification_prompt: "Bạn kiểm tra y lệnh và thông tin bệnh nhân ra sao?" },
-                                { step_id: 2, standard_action: "Vệ sinh tay thường quy, mang khẩu trang", required_keywords: ["vệ sinh tay", "rửa tay", "khẩu trang"], clarification_prompt: "Thao tác vệ sinh tay trước khi lấy thuốc?" },
-                                { step_id: 6, standard_action: "Đuổi sạch bọt khí ra khỏi bơm tiêm", required_keywords: ["đuổi khí", "bọt khí"], clarification_prompt: "Làm sao đảm bảo an toàn tắc mạch trước khi tiêm tĩnh mạch?" },
-                                { step_id: 7, standard_action: "Đặt gối kê tay, buộc garô phía trên vị trí tiêm 5 - 10 cm", required_keywords: ["gối kê", "garo", "buộc garo", "5-10cm"], clarification_prompt: "Bạn đặt dụng cụ gì dưới tay và buộc garô ở đâu?" },
-                                { step_id: 8, standard_action: "Bảo bệnh nhân nắm tay, sờ tĩnh mạch và sát khuẩn da rộng", required_keywords: ["nắm tay", "sờ tĩnh mạch", "sát khuẩn"], clarification_prompt: "Cách làm tĩnh mạch nổi rõ và sát khuẩn?" },
-                                { step_id: 9, standard_action: "Căng da cố định tĩnh mạch, đâm kim ngửa vát góc 15 - 30 độ", required_keywords: ["căng da", "ngửa vát", "15-30 độ", "đâm kim"], clarification_prompt: "Tư thế mặt vát và góc đâm kim vào tĩnh mạch?" },
-                                { step_id: 10, standard_action: "Thấy máu trào vào đốc kim, hạ thấp thân kim luồn thêm 1-2mm", required_keywords: ["máu trào", "hạ kim", "luồn thêm"], clarification_prompt: "Dấu hiệu nhận biết kim đã vào lòng mạch?" },
-                                { step_id: 11, standard_action: "Tháo dây garô, bảo người bệnh mở bàn tay", required_keywords: ["tháo garo", "xòe tay", "mở tay"], clarification_prompt: "Trước khi bơm thuốc tĩnh mạch, bắt buộc phải làm gì?" },
-                                { step_id: 12, standard_action: "Bơm thuốc chậm theo tốc độ quy định, theo dõi sắc mặt người bệnh", required_keywords: ["bơm chậm", "theo dõi", "sắc mặt"], clarification_prompt: "Tốc độ bơm thuốc tĩnh mạch?" },
-                                { step_id: 13, standard_action: "Đặt gạc khô lên vết tiêm, rút kim nhanh và ép giữ cầm máu, dọn dụng cụ ghi hồ sơ", required_keywords: ["đặt gạc", "rút kim", "ép giữ", "thùng kháng thủng", "ghi hồ sơ"], clarification_prompt: "Kỹ thuật rút kim và hoàn tất thủ thuật?" }
-                            ]
-                        },
-                        {
-                            id: "tiem_duoi_da",
-                            name: "Tiêm dưới da (SC - Insulin, Heparin)",
-                            prompt_context: "Quy trình tiêm dưới da theo y lệnh lọ thuốc hoặc bơm tiêm đóng sẵn.",
-                            base_checklist: [
-                                { step_id: 1, standard_action: "Kiểm tra 5 đúng đối chiếu người bệnh và đọc kỹ y lệnh thuốc", required_keywords: ["5 đúng", "đối chiếu", "tên", "liều", "thuốc"], clarification_prompt: "Bạn đối chiếu y lệnh và người bệnh ra sao?" },
-                                { step_id: 2, standard_action: "Vệ sinh tay thường quy, chuẩn bị bơm kim tiêm phù hợp", required_keywords: ["vệ sinh tay", "rửa tay", "chuẩn bị"], clarification_prompt: "Vệ sinh tay và chuẩn bị dụng cụ?" },
-                                { step_id: 5, standard_action: "Chọn vị trí tiêm: Mặt ngoài cánh tay hoặc quanh rốn cách rốn >= 2cm", required_keywords: ["ngoài cánh tay", "quanh rốn", "cách rốn 2cm"], clarification_prompt: "Vị trí chọn để tiêm dưới da?" },
-                                { step_id: 6, standard_action: "Sát khuẩn da từ trong ra ngoài xoắn ốc, để khô tự nhiên", required_keywords: ["sát khuẩn", "xoắn ốc", "trong ra ngoài"], clarification_prompt: "Kỹ thuật sát khuẩn vùng da tiêm?" },
-                                { step_id: 7, standard_action: "Véo nếp da, đâm kim dứt khoát góc 45 độ (hoặc 90 độ kim ngắn)", required_keywords: ["véo da", "45 độ", "đâm kim"], clarification_prompt: "Bạn xử lý nếp da thế nào và đâm kim góc bao nhiêu?" },
-                                { step_id: 8, standard_action: "Thả nếp véo da, bơm thuốc từ từ đều tay", required_keywords: ["thả véo", "bơm thuốc", "từ từ"], clarification_prompt: "Thao tác trước và trong khi đẩy thuốc dưới da?" },
-                                { step_id: 9, standard_action: "Rút kim nhanh, ấn nhẹ gạc khô (không day ấn), hủy kim ghi hồ sơ", required_keywords: ["rút kim", "gạc khô", "không day", "thùng kháng thủng", "ghi hồ sơ"], clarification_prompt: "Kỹ thuật rút kim và chăm sóc vết tiêm dưới da?" }
-                            ]
-                        },
-                        {
-                            id: "tiem_trong_da",
-                            name: "Tiêm trong da (ID - Test nội bì / BCG)",
-                            prompt_context: "Quy trình thử phản ứng da hoặc tiêm vắc xin tạo nốt sẩn da cam.",
-                            base_checklist: [
-                                { step_id: 1, standard_action: "Thực hiện 5 đúng, đối chiếu người bệnh, giải thích mục đích thử test", required_keywords: ["5 đúng", "đối chiếu", "giải thích", "thử test"], clarification_prompt: "Bạn đối chiếu và giải thích với bệnh nhân ra sao?" },
-                                { step_id: 2, standard_action: "Vệ sinh tay, chuẩn bị bơm tiêm 1ml (kim 26-27G)", required_keywords: ["vệ sinh tay", "bơm 1ml", "chuẩn bị"], clarification_prompt: "Loại bơm kim tiêm dùng cho tiêm trong da?" },
-                                { step_id: 5, standard_action: "Chọn vị trí: 1/3 trên mặt trước trong cẳng tay", required_keywords: ["1/3 trên", "trước trong cẳng tay", "da sáng"], clarification_prompt: "Vị trí giải phẫu chuẩn để tiêm trong da?" },
-                                { step_id: 6, standard_action: "Sát khuẩn da hình xoắn ốc từ trong ra ngoài (>= 5cm), để khô", required_keywords: ["sát khuẩn", "xoắn ốc", "để khô"], clarification_prompt: "Kỹ thuật sát khuẩn da vùng tiêm test?" },
-                                { step_id: 7, standard_action: "Căng da, đâm kim ngửa mặt vát góc 10 - 15 độ vừa ngập mặt vát", required_keywords: ["căng da", "ngửa vát", "10-15 độ", "ngập mặt vát"], clarification_prompt: "Tư thế mặt vát và góc đâm kim?" },
-                                { step_id: 8, standard_action: "Bơm chậm 0.1ml thuốc tạo nốt sẩn da cam đường kính 5-6mm", required_keywords: ["bơm chậm", "0.1ml", "nốt sẩn", "da cam"], clarification_prompt: "Thể tích thuốc bơm và đặc điểm nốt sẩn hình thành?" },
-                                { step_id: 9, standard_action: "Rút kim nhanh theo góc đâm, TUYỆT ĐỐI KHÔNG day ấn lên nốt sẩn", required_keywords: ["rút kim", "không day", "không ấn"], clarification_prompt: "Xử lý sau khi rút kim tiêm trong da?" },
-                                { step_id: 10, standard_action: "Dùng bút khoanh tròn nốt sẩn, ghi giờ và dặn theo dõi đọc sau 15-20 phút", required_keywords: ["khoanh tròn", "ghi giờ", "15 phút", "20 phút", "đọc kết quả"], clarification_prompt: "Bạn đánh dấu và hẹn thời gian đọc test bao lâu?" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    id: "nursing_other",
-                    title: "2. Kỹ năng điều dưỡng khác",
-                    skills: [
-                        {
-                            id: "cat_chi_vet_khau",
-                            name: "Cắt chỉ vết khâu (27 bước)",
-                            prompt_context: "Quy trình cắt chỉ vết khâu chuẩn 27 bước: nhận định vết khâu, đặt tấm lót, mở mâm vô khuẩn, tháo băng cũ, sát khuẩn, đặt gạc an toàn, nhấc mối chỉ bằng nhíp luồn kéo cắt sát chân chỉ (tránh để phần chỉ trên da chui xuống dưới da), đặt từng mối lên gạc đếm kiểm tra, sát khuẩn lại, che chở và cố định.",
-                            scenarios: [
-                                "Bệnh nhân nam, 45 tuổi, mổ nội soi cắt ruột thừa ngày thứ 7. Vết mổ khô, lành tốt, không sưng đỏ. Bác sĩ chỉ định cắt chỉ vết khâu.",
-                                "Bệnh nhân nữ, 30 tuổi, khâu vết thương rách da cẳng chân do tai nạn giao thông ngày thứ 10. Vết thương đã liền tốt. Bác sĩ chỉ định cắt chỉ.",
-                                "Bệnh nhân nam, 60 tuổi, phẫu thuật thoát vị bẹn ngày thứ 8. Bác sĩ chỉ định cắt chỉ ngắt quãng."
+                            "id": "tiem_bap",
+                            "name": "Tiêm bắp",
+                            "scenarios": [
+                                "Bác sĩ chỉ định tiêm bắp 1 ống giảm đau Diclofenac. Bạn hãy tiến hành kỹ thuật tiêm bắp vùng cơ delta hoặc cơ mông."
                             ],
-                            checklist: [
-                                { step_id: 1, standard_action: "Chào hỏi, giới thiệu bản thân", required_keywords: ["chào", "giới thiệu", "tên"], clarification_prompt: "Khi tiếp xúc với người bệnh lần đầu, bạn sẽ nói gì?" },
-                                { step_id: 2, standard_action: "Xác định đúng người bệnh", required_keywords: ["hỏi tên", "tuổi", "đối chiếu", "người bệnh"], clarification_prompt: "Bạn làm cách nào để chắc chắn mình đang cắt chỉ đúng bệnh nhân?" },
-                                { step_id: 3, standard_action: "Báo giải thích cho người bệnh biết", required_keywords: ["báo", "giải thích", "cắt chỉ"], clarification_prompt: "Bạn sẽ nói gì với người bệnh về mục đích thủ thuật để họ yên tâm?" },
-                                { step_id: 4, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Trước khi thăm khám, bạn cần làm gì với đôi tay của mình?" },
-                                { step_id: 5, standard_action: "Nhận định tình trạng người bệnh", required_keywords: ["nhận định", "tình trạng", "người bệnh", "tổng trạng"], clarification_prompt: "Trước khi làm thủ thuật, bạn đánh giá yếu tố toàn thân nào của người bệnh?" },
-                                { step_id: 6, standard_action: "Nhận định tình trạng vết khâu", required_keywords: ["nhận định", "vết khâu", "kiểm tra", "sưng", "đỏ", "lành"], clarification_prompt: "Bạn cần quan sát và đánh giá những gì tại vị trí sắp cắt chỉ?" },
-                                { step_id: 7, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Sau khi nhận định xong và đi chuẩn bị dụng cụ, bạn làm gì?" },
-                                { step_id: 8, standard_action: "Chuẩn bị dụng cụ đầy đủ và phù hợp", required_keywords: ["chuẩn bị", "dụng cụ", "đầy đủ", "phù hợp", "kéo cắt chỉ", "nhíp", "mâm vô khuẩn"], clarification_prompt: "Bạn cần những dụng cụ y tế nào để thực hiện việc cắt chỉ?" },
-                                { step_id: 9, standard_action: "Bộc lộ vùng vết khâu (giữ cho người bệnh được kín đáo và thoải mái)", required_keywords: ["bộc lộ", "vết khâu", "kín đáo", "thoải mái"], clarification_prompt: "Bạn bộc lộ vị trí thao tác như thế nào để đảm bảo sự riêng tư cho bệnh nhân?" },
-                                { step_id: 10, standard_action: "Đặt tấm lót không thấm phía dưới nơi vị trí vết khâu", required_keywords: ["đặt tấm lót", "không thấm", "phía dưới", "dưới vết khâu"], clarification_prompt: "Làm sao để bảo vệ giường bệnh không bị dính dịch/máu bẩn?" },
-                                { step_id: 11, standard_action: "Vệ sinh tay thường quy, mang găng tay sạch", required_keywords: ["vệ sinh tay", "rửa tay", "mang găng tay sạch", "đeo găng"], clarification_prompt: "Trước khi chạm vào mâm vô khuẩn và tháo băng, bạn xử lý tay mình thế nào?" },
-                                { step_id: 12, standard_action: "Mở khăn mâm dụng cụ vô khuẩn", required_keywords: ["mở khăn", "mâm", "vô khuẩn"], clarification_prompt: "Bạn thao tác thế nào với bộ mâm dụng cụ đã chuẩn bị?" },
-                                { step_id: 13, standard_action: "Lấy dụng cụ vô khuẩn an toàn", required_keywords: ["lấy dụng cụ", "vô khuẩn", "an toàn", "kềm tiếp tế"], clarification_prompt: "Bạn dùng dụng cụ gì để gắp đồ vật bên trong mâm vô khuẩn?" },
-                                { step_id: 14, standard_action: "Sắp xếp dụng cụ trong mâm", required_keywords: ["sắp xếp", "dụng cụ", "trong mâm"], clarification_prompt: "Sau khi lấy kềm tiếp tế, bạn thao tác thế nào với đồ dùng trong mâm?" },
-                                { step_id: 15, standard_action: "Tháo băng bẩn (bằng kềm sạch hoặc găng tay sạch), rửa lại tay (nếu cần).", required_keywords: ["tháo băng bẩn", "kềm sạch", "găng tay sạch", "rửa lại tay"], clarification_prompt: "Bạn gỡ lớp băng cũ đang che vết khâu bằng cách nào?" },
-                                { step_id: 16, standard_action: "Sát khuẩn vết khâu và vùng da xung quanh an toàn", required_keywords: ["sát khuẩn", "vết khâu", "vùng da xung quanh", "từ trong ra ngoài"], clarification_prompt: "Nguyên tắc vô khuẩn vết khâu trước khi cắt chỉ được thực hiện như thế nào?" },
-                                { step_id: 17, standard_action: "Đặt gạc ở vị trí an toàn gần vết khâu.", required_keywords: ["đặt gạc", "vị trí an toàn", "gần vết khâu"], clarification_prompt: "Bạn chuẩn bị gạc ở đâu để hứng các mối chỉ sau khi cắt?" },
-                                { step_id: 18, standard_action: "Dùng kéo cắt từng mối chỉ nhẹ nhàng. (chỉ nằm trên da không được chui xuống dưới da).", required_keywords: ["kéo cắt chỉ", "từng mối", "nhẹ nhàng", "phần chỉ trên da không chui xuống", "kéo sát chân chỉ", "nhíp nhấc mối chỉ"], clarification_prompt: "Khi dùng kéo và nhíp để cắt chỉ, thao tác quan trọng nhất để tránh nhiễm trùng mô bên dưới là gì?" },
-                                { step_id: 19, standard_action: "Đặt từng mối chỉ lên miếng gạc để kiểm tra sự nguyên vẹn của mối chỉ.", required_keywords: ["đặt lên gạc", "từng mối chỉ", "kiểm tra", "nguyên vẹn", "đếm mối chỉ"], clarification_prompt: "Cắt xong mối chỉ, bạn làm gì với nó để đảm bảo không bị sót chỉ dưới da?" },
-                                { step_id: 20, standard_action: "Sát khuẩn lại vết khâu, rộng ra xung quanh 5cm", required_keywords: ["sát khuẩn lại", "vết khâu", "rộng ra 5cm", "xung quanh"], clarification_prompt: "Sau khi rút hết toàn bộ chỉ, bạn xử lý vùng da vết khâu như thế nào?" },
-                                { step_id: 21, standard_action: "Che chở vết khâu (rộng ra 5cm)", required_keywords: ["che chở", "vết khâu", "rộng ra 5cm", "đặt gạc"], clarification_prompt: "Làm sao để bảo vệ vết khâu sau khi đã sát khuẩn lại?" },
-                                { step_id: 22, standard_action: "Cố định băng bằng băng keo hoặc băng cuộn (nếu cần)", required_keywords: ["cố định", "băng keo", "dán keo", "băng cuộn"], clarification_prompt: "Bạn dùng gì để giữ cố định miếng gạc trên vết khâu?" },
-                                { step_id: 23, standard_action: "Tháo găng tay, vệ sinh tay thường quy", required_keywords: ["tháo găng", "vệ sinh tay", "rửa tay"], clarification_prompt: "Sau khi dán băng keo xong, bạn xử lý đôi tay của mình thế nào?" },
-                                { step_id: 24, standard_action: "Báo cho người bệnh biết việc đã xong, cho người bệnh nằm lại tư thế tiện nghi", required_keywords: ["báo xong", "tư thế tiện nghi", "thoải mái"], clarification_prompt: "Kết thúc thủ thuật, bạn giao tiếp thế nào và dặn dò, sắp xếp cho bệnh nhân ra sao?" },
-                                { step_id: 25, standard_action: "Thu dọn dụng cụ, xử lý dụng cụ và chất thải lây nhiễm đúng cách", required_keywords: ["thu dọn", "dụng cụ", "chất thải", "phân loại rác", "rác y tế"], clarification_prompt: "Bạn làm gì với mâm dụng cụ và những miếng gạc có dính mối chỉ?" },
-                                { step_id: 26, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Sau khi phân loại rác xong, thao tác kiểm soát nhiễm khuẩn tiếp theo là gì?" },
-                                { step_id: 27, standard_action: "Ghi hồ sơ", required_keywords: ["ghi hồ sơ", "ghi bệnh án", "ghi chép"], clarification_prompt: "Thao tác cuối cùng để lưu lại bằng chứng đã cắt chỉ là gì?" }
+                            "checklist": [
+                                {"step_id": 1, "standard_action": "Chào người bệnh và giới thiệu bản thân", "required_keywords": ["chào", "giới thiệu", "tên"], "clarification_prompt": "Khi gặp bệnh nhân, bạn sẽ bắt đầu giao tiếp như thế nào?"},
+                                {"step_id": 2, "standard_action": "Kiểm tra thông tin người bệnh", "required_keywords": ["kiểm tra", "thông tin", "hỏi tên", "tuổi"], "clarification_prompt": "Làm sao để biết bạn tiêm đúng cho người bệnh này?"},
+                                {"step_id": 3, "standard_action": "Báo và giải thích cho người bệnh", "required_keywords": ["báo", "giải thích", "tiêm"], "clarification_prompt": "Bạn sẽ nói gì về thủ thuật để bệnh nhân hợp tác?"},
+                                {"step_id": 4, "standard_action": "Vệ sinh tay", "required_keywords": ["vệ sinh tay", "rửa tay"], "clarification_prompt": "Trước khi thăm khám, bạn cần làm gì với đôi tay?"},
+                                {"step_id": 5, "standard_action": "Nhận định tình trạng người bệnh", "required_keywords": ["nhận định", "tình trạng", "dị ứng", "tổng trạng"], "clarification_prompt": "Trước khi tiêm, bạn cần đánh giá những yếu tố gì ở người bệnh?"},
+                                {"step_id": 6, "standard_action": "Chuẩn bị dụng cụ và thuốc đầy đủ và phù hợp (áp dụng quy trình rút thuốc)", "required_keywords": ["chuẩn bị", "dụng cụ", "thuốc đầy đủ", "bơm tiêm"], "clarification_prompt": "Bạn chuẩn bị những dụng cụ và thuốc gì để tiêm?"},
+                                {"step_id": 7, "standard_action": "Đối chiếu lại đúng người bệnh", "required_keywords": ["đối chiếu lại", "đúng người bệnh", "phiếu thuốc"], "clarification_prompt": "Sau khi lấy thuốc và quay lại giường, bạn làm gì trước khi bộc lộ vùng tiêm?"},
+                                {"step_id": 8, "standard_action": "Để lộ vùng tiêm", "required_keywords": ["để lộ", "vùng tiêm", "bộc lộ"], "clarification_prompt": "Bạn yêu cầu bệnh nhân chuẩn bị vùng tiêm như thế nào?"},
+                                {"step_id": 9, "standard_action": "Xác định và nhận định vị trí tiêm", "required_keywords": ["xác định", "nhận định", "vị trí tiêm", "cơ delta", "cơ mông", "cơ đùi"], "clarification_prompt": "Bạn chọn vị trí tiêm bắp ở đâu và kiểm tra vùng cơ đó thế nào?"},
+                                {"step_id": 10, "standard_action": "Vệ sinh tay, mang găng tay sạch (nếu cần)", "required_keywords": ["vệ sinh tay", "rửa tay", "mang găng"], "clarification_prompt": "Trước khi sát khuẩn vùng tiêm, bạn xử lý tay mình ra sao?"},
+                                {"step_id": 11, "standard_action": "Sát khuẩn vùng tiêm rộng từ trong ra ngoài đường kính 10cm", "required_keywords": ["sát khuẩn", "từ trong ra ngoài", "10cm"], "clarification_prompt": "Thao tác sát khuẩn vùng tiêm được thực hiện với nguyên tắc nào?"},
+                                {"step_id": 12, "standard_action": "Đuổi khí trong bơm tiêm", "required_keywords": ["đuổi khí", "bơm tiêm"], "clarification_prompt": "Trước khi đâm kim, bạn thao tác gì với bơm tiêm?"},
+                                {"step_id": 13, "standard_action": "Căng da, đâm kim góc 90 độ so với mặt da", "required_keywords": ["căng da", "đâm kim", "góc 90 độ", "thẳng đứng"], "clarification_prompt": "Khi đâm kim tiêm bắp, bạn xử lý vùng da và cầm kim góc bao nhiêu độ?"},
+                                {"step_id": 14, "standard_action": "Rút nòng kiểm tra không có máu", "required_keywords": ["rút nòng", "kiểm tra", "không có máu"], "clarification_prompt": "Sau khi đâm kim sâu vào cơ, thao tác tối quan trọng để đảm bảo an toàn là gì?"},
+                                {"step_id": 15, "standard_action": "Bơm thuốc chậm và quan sát sắc diện người bệnh", "required_keywords": ["bơm thuốc chậm", "quan sát", "sắc diện"], "clarification_prompt": "Khi bơm thuốc, tốc độ như thế nào và bạn cần để ý điều gì?"},
+                                {"step_id": 16, "standard_action": "Rút kim theo hướng đâm vào", "required_keywords": ["rút kim", "hướng đâm vào", "nhanh"], "clarification_prompt": "Bơm xong, bạn lấy kim ra khỏi da như thế nào?"},
+                                {"step_id": 17, "standard_action": "Ấn gòn giữ chặt vào vị trí lỗ kim đâm vừa rút kim cho đến khi không còn chảy máu", "required_keywords": ["ấn gòn", "giữ chặt", "vị trí lỗ kim", "không chảy máu"], "clarification_prompt": "Xử lý vị trí tiêm sau khi rút kim bằng cách nào?"},
+                                {"step_id": 18, "standard_action": "Cố định kim an toàn", "required_keywords": ["cố định kim", "an toàn", "thùng rác sắc nhọn"], "clarification_prompt": "Cây kim vừa rút ra bạn xử lý ở đâu?"},
+                                {"step_id": 19, "standard_action": "Tháo găng tay, vệ sinh tay", "required_keywords": ["tháo găng", "vệ sinh tay", "rửa tay"], "clarification_prompt": "Xử lý kim xong, bạn làm gì với đôi tay?"},
+                                {"step_id": 20, "standard_action": "Báo giải thích cho người bệnh biết việc đã xong, giúp người bệnh tiện nghi", "required_keywords": ["báo", "đã xong", "tiện nghi", "thoải mái"], "clarification_prompt": "Hoàn tất thủ thuật, bạn giao tiếp thế nào và dặn dò, sắp xếp cho bệnh nhân ra sao?"},
+                                {"step_id": 21, "standard_action": "Thu dọn dụng cụ, xử lý dụng cụ lây nhiễm đúng cách", "required_keywords": ["thu dọn", "dụng cụ", "lây nhiễm", "xử lý rác"], "clarification_prompt": "Mâm tiêm và rác y tế sẽ được bạn xử lý như thế nào?"},
+                                {"step_id": 22, "standard_action": "Ghi hồ sơ", "required_keywords": ["ghi hồ sơ", "ghi bệnh án"], "clarification_prompt": "Thao tác hành chính cuối cùng để lưu lại thông tin là gì?"}
                             ],
-                            distractor_actions: [
-                                "Rút phần chỉ dính bẩn (phần lộ trên mặt da) chui qua mô dưới da gây nhiễm trùng vết khâu.",
-                                "Cắt cả hai nhánh bên của nút thắt chỉ khiến đoạn chỉ chìm dưới da không thể rút ra.",
-                                "Bỏ mối chỉ vừa cắt vào bồn hạt đậu hoặc thùng rác mà không xếp lên gạc để kiểm tra đếm số lượng.",
-                                "Sát khuẩn lại vết khâu bằng cồn 70 độ gây xót thay vì dùng Povidine/Betadine vô khuẩn.",
-                                "Mở khăn mâm vô khuẩn trước khi tháo găng tay tháo băng bẩn (làm vi khuẩn văng vào mâm)."
+                            "distractor_actions": [
+                                "Quên rút nòng kiểm tra máu trước khi bơm thuốc tiêm bắp.",
+                                "Đâm kim bằng cách đẩy từ từ vào cơ gây đau đớn (đâm kim tiêm bắp phải đâm nhanh, dứt khoát như ném phi tiêu).",
+                                "Tiêm bắp ở vị trí cơ delta nhưng chọn sai điểm (đâm vào mỏm cùng vai hoặc đâm quá thấp)."
                             ]
                         },
                         {
-                            id: "thay_bang_vet_thuong",
-                            name: "Thay băng vết thương (28 bước)",
-                            prompt_context: "Quy trình kỹ thuật thay băng vết thương chuẩn 28 bước.",
-                            checklist: [
-                                { step_id: 1, standard_action: "Chào hỏi, giới thiệu bản thân", required_keywords: ["chào", "giới thiệu", "tên"], clarification_prompt: "Khi đến gặp bệnh nhân, bạn nói gì đầu tiên?" },
-                                { step_id: 2, standard_action: "Xác định đúng người bệnh", required_keywords: ["hỏi tên", "tuổi", "đối chiếu"], clarification_prompt: "Làm sao xác định đúng người bệnh?" },
-                                { step_id: 3, standard_action: "Báo giải thích cho người bệnh biết", required_keywords: ["báo", "giải thích", "thay băng"], clarification_prompt: "Bạn giải thích điều gì?" },
-                                { step_id: 4, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước khi nhận định?" },
-                                { step_id: 5, standard_action: "Nhận định tình trạng người bệnh", required_keywords: ["nhận định", "tình trạng", "tổng trạng"], clarification_prompt: "Đánh giá toàn thân người bệnh?" },
-                                { step_id: 6, standard_action: "Nhận định tình trạng vết thương", required_keywords: ["nhận định", "vết thương", "vết mổ"], clarification_prompt: "Kiểm tra yếu tố gì ở vết thương?" },
-                                { step_id: 7, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước khi soạn dụng cụ?" },
-                                { step_id: 8, standard_action: "Chuẩn bị dụng cụ đầy đủ và phù hợp", required_keywords: ["chuẩn bị", "dụng cụ", "mâm vô khuẩn"], clarification_prompt: "Chuẩn bị dụng cụ thay băng?" },
-                                { step_id: 9, standard_action: "Chuẩn bị tư thế người bệnh phù hợp, kín đáo và thoải mái", required_keywords: ["tư thế", "kín đáo", "thoải mái"], clarification_prompt: "Tư thế người bệnh?" },
-                                { step_id: 10, standard_action: "Đặt tấm lót không thấm phía dưới nơi vị trí vết thương", required_keywords: ["đặt tấm lót", "không thấm", "dưới vết thương"], clarification_prompt: "Trải tấm lót giữ vệ sinh giường?" },
-                                { step_id: 11, standard_action: "Vệ sinh tay thường quy, mang găng tay sạch", required_keywords: ["vệ sinh tay", "mang găng tay sạch"], clarification_prompt: "Xử lý tay trước khi tháo băng?" },
-                                { step_id: 12, standard_action: "Mở khăn mâm dụng cụ vô khuẩn", required_keywords: ["mở khăn", "mâm vô khuẩn"], clarification_prompt: "Thao tác mở mâm vô khuẩn?" },
-                                { step_id: 13, standard_action: "Lấy kềm vô khuẩn an toàn", required_keywords: ["lấy kềm", "vô khuẩn", "kềm tiếp tế"], clarification_prompt: "Lấy kềm trong mâm?" },
-                                { step_id: 14, standard_action: "Sắp xếp dụng cụ trong mâm", required_keywords: ["sắp xếp", "dụng cụ", "trong mâm"], clarification_prompt: "Sắp xếp đồ trong mâm?" },
-                                { step_id: 15, standard_action: "Tháo băng bẩn bằng kềm sạch hoặc găng sạch, rửa lại tay", required_keywords: ["tháo băng bẩn", "kềm sạch", "găng tay"], clarification_prompt: "Dụng cụ và thao tác gỡ băng cũ?" },
-                                { step_id: 16, standard_action: "Rửa bên trong vết thương từ trong ra ngoài rìa, trên xuống dưới, xa đến gần", required_keywords: ["rửa bên trong", "trong ra ngoài", "trên xuống dưới", "xa đến gần"], clarification_prompt: "Chiều hướng rửa bên trong vết thương?" },
-                                { step_id: 17, standard_action: "Rửa vùng da xung quanh vết thương rộng ra ngoài 5cm", required_keywords: ["rửa xung quanh", "rộng ra 5cm"], clarification_prompt: "Xử lý vùng da xung quanh vết thương?" },
-                                { step_id: 18, standard_action: "Dùng gạc miếng chậm khô bên trong vết thương", required_keywords: ["chậm khô", "thấm khô", "bên trong"], clarification_prompt: "Làm khô lòng vết thương?" },
-                                { step_id: 19, standard_action: "Lau khô vùng da xung quanh vết thương", required_keywords: ["lau khô", "da xung quanh"], clarification_prompt: "Lau khô da xung quanh?" },
-                                { step_id: 20, standard_action: "Sát khuẩn vùng da xung quanh vết thương bằng dung dịch sát khuẩn da", required_keywords: ["sát khuẩn", "da xung quanh", "cồn"], clarification_prompt: "Sát khuẩn da quanh vết thương?" },
-                                { step_id: 21, standard_action: "Đắp thuốc lên vết thương nếu có y lệnh", required_keywords: ["đắp thuốc", "nếu có y lệnh"], clarification_prompt: "Đắp thuốc vết thương?" },
-                                { step_id: 22, standard_action: "Đặt băng gạc lên vết thương phủ rộng ra 3-5 cm", required_keywords: ["đặt băng gạc", "rộng ra 3-5 cm"], clarification_prompt: "Che phủ vết thương?" },
-                                { step_id: 23, standard_action: "Cố định băng bằng băng keo hoặc băng cuộn", required_keywords: ["cố định", "băng keo", "dán keo"], clarification_prompt: "Cố định miếng gạc?" },
-                                { step_id: 24, standard_action: "Tháo găng tay, vệ sinh tay thường quy", required_keywords: ["tháo găng", "vệ sinh tay", "rửa tay"], clarification_prompt: "Xử lý tay sau khi dán băng?" },
-                                { step_id: 25, standard_action: "Báo người bệnh việc đã xong, cho nằm lại tư thế tiện nghi", required_keywords: ["báo xong", "tư thế tiện nghi"], clarification_prompt: "Dặn dò người bệnh sau thủ thuật?" },
-                                { step_id: 26, standard_action: "Thu dọn dụng cụ, phân loại chất thải lây nhiễm đúng cách", required_keywords: ["thu dọn", "dụng cụ", "chất thải"], clarification_prompt: "Dọn dẹp rác và dụng cụ?" },
-                                { step_id: 27, standard_action: "Vệ sinh tay thường quy", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước khi ghi hồ sơ?" },
-                                { step_id: 28, standard_action: "Ghi hồ sơ bệnh án", required_keywords: ["ghi hồ sơ", "ghi bệnh án"], clarification_prompt: "Hoàn tất thủ tục hành chính?" }
+                            "id": "tiem_tinh_mach",
+                            "name": "Tiêm tĩnh mạch",
+                            "scenarios": [
+                                "Bác sĩ chỉ định tiêm tĩnh mạch chậm 1 ống Calci Clorid. Bạn hãy tiến hành thao tác lấy ven và tiêm tĩnh mạch cho bệnh nhân."
+                            ],
+                            "checklist": [
+                                {"step_id": 1, "standard_action": "Chào người bệnh và giới thiệu bản thân", "required_keywords": ["chào", "giới thiệu", "tên"], "clarification_prompt": "Khi gặp bệnh nhân, bạn sẽ bắt đầu giao tiếp như thế nào?"},
+                                {"step_id": 2, "standard_action": "Kiểm tra thông tin người bệnh", "required_keywords": ["kiểm tra", "thông tin", "hỏi tên", "tuổi"], "clarification_prompt": "Làm sao để biết bạn tiêm đúng cho người bệnh này?"},
+                                {"step_id": 3, "standard_action": "Báo và giải thích cho người bệnh", "required_keywords": ["báo", "giải thích", "tiêm"], "clarification_prompt": "Bạn sẽ nói gì về thủ thuật để bệnh nhân hợp tác?"},
+                                {"step_id": 4, "standard_action": "Vệ sinh tay", "required_keywords": ["vệ sinh tay", "rửa tay"], "clarification_prompt": "Trước khi thăm khám, bạn cần làm gì với đôi tay?"},
+                                {"step_id": 5, "standard_action": "Nhận định tình trạng người bệnh", "required_keywords": ["nhận định", "tình trạng", "dị ứng", "tổng trạng"], "clarification_prompt": "Trước khi tiêm, bạn cần đánh giá những yếu tố gì ở người bệnh?"},
+                                {"step_id": 6, "standard_action": "Chuẩn bị dụng cụ và thuốc đầy đủ và phù hợp (áp dụng quy trình rút thuốc)", "required_keywords": ["chuẩn bị", "dụng cụ", "thuốc đầy đủ", "bơm tiêm"], "clarification_prompt": "Bạn chuẩn bị những dụng cụ và thuốc gì để tiêm?"},
+                                {"step_id": 7, "standard_action": "Đối chiếu lại đúng người bệnh", "required_keywords": ["đối chiếu lại", "đúng người bệnh", "phiếu thuốc"], "clarification_prompt": "Sau khi lấy thuốc và quay lại giường, bạn làm gì trước khi bộc lộ vùng tiêm?"},
+                                {"step_id": 8, "standard_action": "Để lộ vùng tiêm", "required_keywords": ["để lộ", "vùng tiêm", "bộc lộ"], "clarification_prompt": "Bạn yêu cầu bệnh nhân chuẩn bị vùng tiêm như thế nào?"},
+                                {"step_id": 9, "standard_action": "Xác định vị trí tiêm: tìm tĩnh mạch to, rõ, mềm mại, ít di động", "required_keywords": ["xác định", "vị trí tiêm", "tĩnh mạch to", "rõ", "mềm", "ít di động"], "clarification_prompt": "Tiêu chí để bạn chọn một tĩnh mạch tốt để tiêm là gì?"},
+                                {"step_id": 10, "standard_action": "Vệ sinh tay, mang găng tay sạch", "required_keywords": ["vệ sinh tay", "rửa tay", "mang găng"], "clarification_prompt": "Vì tiêm tĩnh mạch có nguy cơ văng máu cao, bạn phải bảo vệ tay như thế nào?"},
+                                {"step_id": 11, "standard_action": "Buộc dây thắt mạch (garrot) phía trên vị trí tiêm 10 – 15cm", "required_keywords": ["buộc dây", "garrot", "phía trên", "10 đến 15cm"], "clarification_prompt": "Để tĩnh mạch nổi rõ, bạn dùng dụng cụ gì và thao tác ở vị trí nào so với chỗ định tiêm?"},
+                                {"step_id": 12, "standard_action": "Sát khuẩn vùng tiêm rộng từ trong ra ngoài đường kính 10cm (hoặc từ dưới lên dọc theo tĩnh mạch rộng từ trong ra ngoài)", "required_keywords": ["sát khuẩn", "từ trong ra ngoài", "dưới lên", "dọc theo", "10cm"], "clarification_prompt": "Sau khi tĩnh mạch nổi rõ, bạn thực hiện vô khuẩn vùng da đó thế nào?"},
+                                {"step_id": 13, "standard_action": "Đuổi khí trong bơm tiêm", "required_keywords": ["đuổi khí", "bơm tiêm"], "clarification_prompt": "Để tránh thuyên tắc khí trong mạch máu, bạn phải làm gì với bơm tiêm trước khi đâm kim?"},
+                                {"step_id": 14, "standard_action": "Để mặt vát kim lên trên, căng da, đâm kim góc 30-40 độ qua da và luồn vào tĩnh mạch", "required_keywords": ["mặt vát kim lên trên", "căng da", "đâm kim", "góc 30 đến 40 độ", "luồn vào tĩnh mạch", "30-40"], "clarification_prompt": "Khi đưa kim vào tĩnh mạch, bạn cầm kim với góc bao nhiêu độ và thao tác tay thế nào?"},
+                                {"step_id": 15, "standard_action": "Rút nòng kiểm tra có máu, tháo garrot", "required_keywords": ["rút nòng", "kiểm tra", "có máu", "tháo garrot", "mở dây thắt"], "clarification_prompt": "Sau khi có cảm giác kim vào mạch, bạn làm gì để xác nhận và giải phóng áp lực tĩnh mạch?"},
+                                {"step_id": 16, "standard_action": "Bơm thuốc chậm và quan sát sắc diện người bệnh", "required_keywords": ["bơm thuốc chậm", "quan sát", "sắc diện"], "clarification_prompt": "Tiêm tĩnh mạch cần bơm thuốc với tốc độ ra sao và chú ý điều gì?"},
+                                {"step_id": 17, "standard_action": "Rút kim theo hướng đâm vào", "required_keywords": ["rút kim", "hướng đâm vào", "nhanh"], "clarification_prompt": "Bơm xong thuốc, bạn lấy kim ra khỏi mạch máu như thế nào?"},
+                                {"step_id": 18, "standard_action": "Ấn gòn giữ chặt vào vị trí lỗ kim đâm vừa rút kim cho đến khi không còn chảy máu", "required_keywords": ["ấn gòn", "giữ chặt", "vị trí lỗ kim", "không chảy máu"], "clarification_prompt": "Làm sao để cầm máu sau khi rút kim tiêm tĩnh mạch?"},
+                                {"step_id": 19, "standard_action": "Cố định kim an toàn", "required_keywords": ["cố định kim", "an toàn", "thùng rác sắc nhọn"], "clarification_prompt": "Cây kim dính máu vừa rút ra bạn phải loại bỏ ở đâu?"},
+                                {"step_id": 20, "standard_action": "Tháo găng tay, vệ sinh tay", "required_keywords": ["tháo găng", "vệ sinh tay", "rửa tay"], "clarification_prompt": "Xử lý kim xong, bạn làm gì với đôi tay mang găng?"},
+                                {"step_id": 21, "standard_action": "Báo giải thích cho người bệnh biết việc đã xong, giúp người bệnh tiện nghi", "required_keywords": ["báo", "đã xong", "tiện nghi", "thoải mái"], "clarification_prompt": "Hoàn tất thủ thuật, bạn giao tiếp thế nào và dặn dò, sắp xếp cho bệnh nhân ra sao?"},
+                                {"step_id": 22, "standard_action": "Thu dọn dụng cụ, xử lý dụng cụ lây nhiễm đúng cách", "required_keywords": ["thu dọn", "dụng cụ", "lây nhiễm", "xử lý rác"], "clarification_prompt": "Mâm tiêm và rác y tế sẽ được bạn xử lý như thế nào?"},
+                                {"step_id": 23, "standard_action": "Ghi hồ sơ", "required_keywords": ["ghi hồ sơ", "ghi bệnh án"], "clarification_prompt": "Thao tác hành chính cuối cùng để lưu lại y lệnh đã thực hiện là gì?"}
+                            ],
+                            "distractor_actions": [
+                                "Bơm thuốc ngay khi thấy máu trào ngược mà quên không tháo garrot làm thuốc phụt ra ngoài hoặc vỡ ven.",
+                                "Đâm kim góc quá đứng (lớn hơn 45 độ) xuyên thủng thành sau của tĩnh mạch gây máu tụ (hematoma).",
+                                "Tiêm thuốc vào tĩnh mạch với tốc độ quá nhanh gây sốc."
                             ]
                         },
                         {
-                            id: "dat_thong_mui_da_day",
-                            name: "Đặt ống thông mũi - dạ dày (26 bước)",
-                            prompt_context: "Quy trình kỹ thuật đặt ống thông mũi - dạ dày chuẩn 26 bước.",
-                            checklist: [
-                                { step_id: 1, standard_action: "Chào người bệnh và giới thiệu bản thân", required_keywords: ["chào", "giới thiệu", "tên"], clarification_prompt: "Chào hỏi người bệnh?" },
-                                { step_id: 2, standard_action: "Xác định đúng người bệnh", required_keywords: ["hỏi tên", "tuổi", "đối chiếu"], clarification_prompt: "Đối chiếu người bệnh?" },
-                                { step_id: 3, standard_action: "Báo và giải thích cho người bệnh", required_keywords: ["báo", "giải thích", "đặt ống thông"], clarification_prompt: "Giải thích thủ thuật?" },
-                                { step_id: 4, standard_action: "Nhận định tình trạng của người bệnh", required_keywords: ["nhận định", "tình trạng", "khám"], clarification_prompt: "Đánh giá người bệnh?" },
-                                { step_id: 5, standard_action: "Vệ sinh tay thường qui", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước soạn dụng cụ?" },
-                                { step_id: 6, standard_action: "Chuẩn bị dụng cụ đầy đủ và phù hợp", required_keywords: ["chuẩn bị", "dụng cụ", "ống thông"], clarification_prompt: "Chuẩn bị dụng cụ?" },
-                                { step_id: 7, standard_action: "Cho người bệnh nằm tư thế Fowler cao (đầu cao 45 độ)", required_keywords: ["tư thế Fowler cao", "đầu cao 45 độ"], clarification_prompt: "Tư thế bệnh nhân?" },
-                                { step_id: 8, standard_action: "Choàng tấm vải không thấm và khăn bông qua cổ người bệnh", required_keywords: ["choàng vải", "khăn bông", "qua cổ"], clarification_prompt: "Trải khăn bảo vệ?" },
-                                { step_id: 9, standard_action: "Vệ sinh 2 lỗ mũi", required_keywords: ["vệ sinh", "lỗ mũi", "làm sạch mũi"], clarification_prompt: "Làm sạch mũi?" },
-                                { step_id: 10, standard_action: "Đặt bồn hạt đậu cạnh má", required_keywords: ["bồn hạt đậu", "cạnh má"], clarification_prompt: "Đặt bồn hạt đậu?" },
-                                { step_id: 11, standard_action: "Vệ sinh tay thường qui, mang găng tay sạch", required_keywords: ["vệ sinh tay", "mang găng tay sạch"], clarification_prompt: "Xử lý tay trước khi chạm ống?" },
-                                { step_id: 12, standard_action: "Đo ống từ chóp mũi -> dái tai -> trung điểm mũi ức và rốn, làm dấu", required_keywords: ["đo ống", "chóp mũi", "dái tai", "trung điểm", "mũi ức", "rốn", "làm dấu"], clarification_prompt: "Đo chiều dài ống thông?" },
-                                { step_id: 13, standard_action: "Làm trơn đầu ống thông, vẩy đầu ống cho ráo", required_keywords: ["làm trơn", "đầu ống", "bôi trơn"], clarification_prompt: "Bôi trơn đầu ống?" },
-                                { step_id: 14, standard_action: "Đưa ống vào lỗ mũi đến vòm họng dừng lại, nghiêng cằm bảo nuốt", required_keywords: ["đưa ống", "vòm họng", "nghiêng cằm", "yêu cầu nuốt", "bảo nuốt"], clarification_prompt: "Thao tác đưa ống qua mũi họng?" },
-                                { step_id: 15, standard_action: "Dùng que đè lưỡi kiểm tra ống qua khỏi hầu", required_keywords: ["que đè lưỡi", "kiểm tra", "qua hầu"], clarification_prompt: "Kiểm tra ống trong miệng họng?" },
-                                { step_id: 16, standard_action: "Đưa ống tiếp tục theo nhịp nuốt mỗi lần 5-10cm đến mức làm dấu", required_keywords: ["đưa tiếp", "theo nhịp nuốt", "5-10 cm", "đến mức làm dấu"], clarification_prompt: "Đưa ống xuống dạ dày?" },
-                                { step_id: 17, standard_action: "Thử ống: Rút dịch dạ dày thử trên giấy đo pH (pH <= 5)", required_keywords: ["thử ống", "rút dịch", "giấy quỳ", "đo ph", "ph <= 5"], clarification_prompt: "Kiểm tra vị trí ống trong dạ dày?" },
-                                { step_id: 18, standard_action: "Cố định ống ở mũi hoặc má bằng băng keo", required_keywords: ["cố định", "ở mũi", "ở má", "băng keo"], clarification_prompt: "Cố định ống thông?" },
-                                { step_id: 19, standard_action: "Thực hiện bước tiếp theo tùy mục đích (nuôi ăn, giải áp, rửa dạ dày)", required_keywords: ["thực hiện", "mục đích", "nuôi ăn", "rút dịch", "giải áp"], clarification_prompt: "Thao tác theo mục đích đặt ống?" },
-                                { step_id: 20, standard_action: "Cố định ống ở đầu giường hoặc áo cao hơn dạ dày (nếu lưu ống)", required_keywords: ["cố định", "trên áo", "cao hơn dạ dày"], clarification_prompt: "Cố định đuôi ống lưu?" },
-                                { step_id: 21, standard_action: "Chậm khô miệng mũi người bệnh", required_keywords: ["lau", "chậm khô", "miệng", "mũi"], clarification_prompt: "Vệ sinh miệng mũi sau đặt?" },
-                                { step_id: 22, standard_action: "Tháo găng tay, vệ sinh tay thường qui", required_keywords: ["tháo găng", "vệ sinh tay", "rửa tay"], clarification_prompt: "Xử lý tay sau thủ thuật?" },
-                                { step_id: 23, standard_action: "Báo người bệnh việc đã xong, cho nằm tư thế tiện nghi đầu cao", required_keywords: ["báo xong", "tư thế tiện nghi", "giữ đầu cao"], clarification_prompt: "Dặn dò và tư thế người bệnh?" },
-                                { step_id: 24, standard_action: "Thu dọn dụng cụ, xử lý chất thải lây nhiễm đúng cách", required_keywords: ["thu dọn", "dụng cụ", "chất thải"], clarification_prompt: "Dọn dẹp rác và dụng cụ?" },
-                                { step_id: 25, standard_action: "Vệ sinh tay thường qui", required_keywords: ["vệ sinh tay", "rửa tay"], clarification_prompt: "Vệ sinh tay trước ghi hồ sơ?" },
-                                { step_id: 26, standard_action: "Ghi hồ sơ bệnh án", required_keywords: ["ghi hồ sơ", "ghi bệnh án"], clarification_prompt: "Ghi chép hồ sơ bệnh án?" }
+                            "id": "tiem_duoi_da",
+                            "name": "Tiêm dưới da",
+                            "scenarios": [
+                                "Bệnh nhân có y lệnh tiêm Insulin. Bạn hãy tiến hành kỹ thuật tiêm dưới da vùng bụng (cách rốn 5cm)."
+                            ],
+                            "checklist": [
+                                {"step_id": 1, "standard_action": "Chào người bệnh và giới thiệu bản thân", "required_keywords": ["chào", "giới thiệu", "tên"], "clarification_prompt": "Khi gặp bệnh nhân, bạn sẽ bắt đầu giao tiếp như thế nào?"},
+                                {"step_id": 2, "standard_action": "Kiểm tra thông tin người bệnh", "required_keywords": ["kiểm tra", "thông tin", "hỏi tên", "tuổi"], "clarification_prompt": "Làm sao để biết bạn tiêm đúng cho người bệnh này?"},
+                                {"step_id": 3, "standard_action": "Báo và giải thích cho người bệnh", "required_keywords": ["báo", "giải thích", "tiêm"], "clarification_prompt": "Bạn sẽ nói gì về thủ thuật để bệnh nhân hợp tác?"},
+                                {"step_id": 4, "standard_action": "Vệ sinh tay", "required_keywords": ["vệ sinh tay", "rửa tay"], "clarification_prompt": "Trước khi thăm khám, bạn cần làm gì với đôi tay?"},
+                                {"step_id": 5, "standard_action": "Nhận định tình trạng người bệnh", "required_keywords": ["nhận định", "tình trạng", "dị ứng", "tổng trạng"], "clarification_prompt": "Trước khi tiêm, bạn cần đánh giá những yếu tố gì ở người bệnh?"},
+                                {"step_id": 6, "standard_action": "Chuẩn bị dụng cụ và thuốc đầy đủ và phù hợp (áp dụng quy trình rút thuốc)", "required_keywords": ["chuẩn bị", "dụng cụ", "thuốc đầy đủ", "bơm tiêm"], "clarification_prompt": "Bạn chuẩn bị những dụng cụ và thuốc gì để tiêm?"},
+                                {"step_id": 7, "standard_action": "Đối chiếu lại đúng người bệnh", "required_keywords": ["đối chiếu lại", "đúng người bệnh", "phiếu thuốc"], "clarification_prompt": "Sau khi lấy thuốc và quay lại giường, bạn làm gì trước khi bộc lộ vùng tiêm?"},
+                                {"step_id": 8, "standard_action": "Để lộ vùng tiêm", "required_keywords": ["để lộ", "vùng tiêm", "bộc lộ"], "clarification_prompt": "Bạn yêu cầu bệnh nhân chuẩn bị vùng tiêm như thế nào?"},
+                                {"step_id": 9, "standard_action": "Xác định và nhận định vị trí tiêm", "required_keywords": ["xác định", "nhận định", "vị trí tiêm", "mô mỡ", "bụng", "mặt ngoài cánh tay"], "clarification_prompt": "Bạn chọn vị trí tiêm dưới da ở đâu và kiểm tra vùng đó thế nào?"},
+                                {"step_id": 10, "standard_action": "Vệ sinh tay, mang găng tay sạch (nếu cần)", "required_keywords": ["vệ sinh tay", "rửa tay", "mang găng"], "clarification_prompt": "Trước khi sát khuẩn vùng tiêm, bạn xử lý tay mình ra sao?"},
+                                {"step_id": 11, "standard_action": "Sát khuẩn vùng tiêm rộng từ trong ra ngoài đường kính 10cm", "required_keywords": ["sát khuẩn", "từ trong ra ngoài", "10cm"], "clarification_prompt": "Thao tác sát khuẩn vùng tiêm được thực hiện với nguyên tắc nào?"},
+                                {"step_id": 12, "standard_action": "Đuổi khí trong bơm tiêm", "required_keywords": ["đuổi khí", "bơm tiêm"], "clarification_prompt": "Trước khi đâm kim, bạn thao tác gì với bơm tiêm?"},
+                                {"step_id": 13, "standard_action": "Véo da, đâm kim góc 45 độ so với mặt da", "required_keywords": ["véo da", "đâm kim", "góc 45 độ"], "clarification_prompt": "Khi tiêm dưới da, bạn xử lý vùng da tiêm và góc độ kim như thế nào?"},
+                                {"step_id": 14, "standard_action": "Rút nòng kiểm tra không có máu", "required_keywords": ["rút nòng", "kiểm tra", "không có máu"], "clarification_prompt": "Sau khi đâm kim, thao tác bắt buộc nào để đảm bảo kim không vào mạch máu?"},
+                                {"step_id": 15, "standard_action": "Bơm thuốc chậm và quan sát sắc diện người bệnh", "required_keywords": ["bơm thuốc chậm", "quan sát", "sắc diện"], "clarification_prompt": "Khi bơm thuốc, tốc độ như thế nào và bạn cần để ý điều gì?"},
+                                {"step_id": 16, "standard_action": "Rút kim theo hướng đâm vào", "required_keywords": ["rút kim", "hướng đâm vào", "nhanh"], "clarification_prompt": "Bơm xong, bạn lấy kim ra khỏi da như thế nào?"},
+                                {"step_id": 17, "standard_action": "Ấn gòn giữ chặt vào vị trí lỗ kim đâm vừa rút kim cho đến khi không còn chảy máu", "required_keywords": ["ấn gòn", "giữ chặt", "vị trí lỗ kim", "không chảy máu"], "clarification_prompt": "Xử lý vị trí tiêm sau khi rút kim bằng cách nào?"},
+                                {"step_id": 18, "standard_action": "Cố định kim an toàn", "required_keywords": ["cố định kim", "an toàn", "thùng rác sắc nhọn"], "clarification_prompt": "Cây kim vừa rút ra bạn xử lý ở đâu?"},
+                                {"step_id": 19, "standard_action": "Tháo găng tay, vệ sinh tay", "required_keywords": ["tháo găng", "vệ sinh tay", "rửa tay"], "clarification_prompt": "Xử lý kim xong, bạn làm gì với đôi tay?"},
+                                {"step_id": 20, "standard_action": "Báo giải thích cho người bệnh biết việc đã xong, giúp người bệnh tiện nghi", "required_keywords": ["báo", "đã xong", "tiện nghi", "thoải mái"], "clarification_prompt": "Hoàn tất thủ thuật, bạn giao tiếp thế nào và dặn dò, sắp xếp cho bệnh nhân ra sao?"},
+                                {"step_id": 21, "standard_action": "Thu dọn dụng cụ, xử lý dụng cụ lây nhiễm đúng cách", "required_keywords": ["thu dọn", "dụng cụ", "lây nhiễm", "xử lý rác"], "clarification_prompt": "Mâm tiêm và rác y tế sẽ được bạn xử lý như thế nào?"},
+                                {"step_id": 22, "standard_action": "Ghi hồ sơ", "required_keywords": ["ghi hồ sơ", "ghi bệnh án"], "clarification_prompt": "Thao tác hành chính cuối cùng để lưu lại thông tin là gì?"}
+                            ],
+                            "distractor_actions": [
+                                "Quên véo da trước khi đâm kim 45 độ ở người bệnh gầy, đâm trúng cơ.",
+                                "Đâm thẳng góc 90 độ bằng kim tiêm thông thường (không phải bút tiêm insulin) gây tiêm vào cơ.",
+                                "Vừa bơm thuốc vừa nói chuyện làm bệnh nhân mất tập trung thay vì quan sát sắc diện."
                             ]
                         },
                         {
-                            id: "khau_trang",
-                            name: "Mang và tháo khẩu trang y tế đúng quy trình",
-                            prompt_context: "Quy trình kiểm soát nhiễm khuẩn, mang và tháo khẩu trang đúng kỹ thuật.",
-                            checklist: [
-                                { step_id: 1, standard_action: "Vệ sinh tay thường quy trước khi cầm khẩu trang", required_keywords: ["vệ sinh tay", "rửa tay", "sát khuẩn tay"], clarification_prompt: "Trước khi chạm vào khẩu trang sạch, bạn cần làm gì trước tiên?" },
-                                { step_id: 2, standard_action: "Kiểm tra khẩu trang, phân biệt mặt trong/ngoài và nẹp mũi", required_keywords: ["kiểm tra", "mặt trong", "mặt ngoài", "nẹp mũi", "thanh nẹp"], clarification_prompt: "Làm thế nào để phân biệt mặt trong, mặt ngoài và mép trên của khẩu trang?" },
-                                { step_id: 3, standard_action: "Cầm dây quai đeo vào tai, che kín mũi, miệng và cằm", required_keywords: ["dây quai", "đeo vào tai", "che kín", "mũi", "miệng", "cằm"], clarification_prompt: "Bạn đặt khẩu trang lên mặt và giữ bằng bộ phận nào?" },
-                                { step_id: 4, standard_action: "Dùng ngón tay miết thanh nẹp nhôm ôm sát sống mũi", required_keywords: ["miết", "nẹp nhôm", "sống mũi", "ôm sát", "kín"], clarification_prompt: "Bạn cố định phần nẹp nhôm trên sống mũi bằng động tác nào?" },
-                                { step_id: 5, standard_action: "Kéo mép dưới phủ kín cằm và kiểm tra độ kín", required_keywords: ["kéo", "dưới cằm", "phủ kín", "kiểm tra"], clarification_prompt: "Mép dưới của khẩu trang cần phủ đến vị trí nào?" },
-                                { step_id: 6, standard_action: "Vệ sinh tay trước khi tiến hành tháo khẩu trang", required_keywords: ["vệ sinh tay", "sát khuẩn tay", "trước khi tháo"], clarification_prompt: "Trước khi đưa tay lên tháo khẩu trang bẩn, bước trung gian nào là bắt buộc?" },
-                                { step_id: 7, standard_action: "Tháo khẩu trang chỉ cầm vào dây quai, không chạm mặt ngoài", required_keywords: ["dây quai", "tháo", "không chạm", "mặt ngoài", "mặt trước"], clarification_prompt: "Kỹ thuật tháo khẩu trang thế nào để tránh tay nhiễm khuẩn từ mặt ngoài?" },
-                                { step_id: 8, standard_action: "Bỏ khẩu trang vào thùng rác y tế lây nhiễm có nắp đậy", required_keywords: ["thùng rác", "y tế", "lây nhiễm", "có nắp"], clarification_prompt: "Khẩu trang đã qua sử dụng phải bỏ vào thùng rác loại nào?" },
-                                { step_id: 9, standard_action: "Vệ sinh tay thường quy ngay sau khi bỏ khẩu trang", required_keywords: ["vệ sinh tay", "rửa tay", "sau khi tháo"], clarification_prompt: "Thao tác vệ sinh cuối cùng sau khi bỏ khẩu trang là gì?" }
+                            "id": "tiem_trong_da",
+                            "name": "Tiêm trong da",
+                            "scenarios": [
+                                "Bác sĩ chỉ định tiêm trong da 1/10ml dung dịch Penicillin pha loãng ở mặt trước cẳng tay bệnh nhân để thử phản ứng dị ứng trước khi tiêm liều đầy đủ."
+                            ],
+                            "checklist": [
+                                {"step_id": 1, "standard_action": "Chào người bệnh và giới thiệu bản thân", "required_keywords": ["chào", "giới thiệu", "tên"], "clarification_prompt": "Khi gặp bệnh nhân, bạn sẽ bắt đầu giao tiếp như thế nào?"},
+                                {"step_id": 2, "standard_action": "Kiểm tra thông tin người bệnh", "required_keywords": ["kiểm tra", "thông tin", "hỏi tên", "tuổi"], "clarification_prompt": "Làm sao để biết bạn tiêm đúng cho người bệnh này?"},
+                                {"step_id": 3, "standard_action": "Báo và giải thích cho người bệnh", "required_keywords": ["báo", "giải thích", "tiêm", "thử phản ứng"], "clarification_prompt": "Bạn sẽ nói gì về thủ thuật để bệnh nhân hợp tác?"},
+                                {"step_id": 4, "standard_action": "Vệ sinh tay", "required_keywords": ["vệ sinh tay", "rửa tay"], "clarification_prompt": "Trước khi thăm khám, bạn cần làm gì với đôi tay?"},
+                                {"step_id": 5, "standard_action": "Nhận định tình trạng người bệnh", "required_keywords": ["nhận định", "tình trạng", "dị ứng", "tổng trạng"], "clarification_prompt": "Trước khi tiêm, bạn cần đánh giá những yếu tố gì ở người bệnh?"},
+                                {"step_id": 6, "standard_action": "Chuẩn bị dụng cụ và thuốc đầy đủ và phù hợp (áp dụng quy trình rút thuốc)", "required_keywords": ["chuẩn bị", "dụng cụ", "thuốc đầy đủ", "bơm tiêm"], "clarification_prompt": "Bạn chuẩn bị những dụng cụ và thuốc gì để tiêm?"},
+                                {"step_id": 7, "standard_action": "Đối chiếu lại đúng người bệnh", "required_keywords": ["đối chiếu lại", "đúng người bệnh", "phiếu thuốc"], "clarification_prompt": "Sau khi lấy thuốc và quay lại giường, bạn làm gì trước khi bộc lộ vùng tiêm?"},
+                                {"step_id": 8, "standard_action": "Để lộ vùng tiêm", "required_keywords": ["để lộ", "vùng tiêm", "bộc lộ"], "clarification_prompt": "Bạn yêu cầu bệnh nhân chuẩn bị vùng tiêm như thế nào?"},
+                                {"step_id": 9, "standard_action": "Xác định và nhận định vị trí tiêm", "required_keywords": ["xác định", "nhận định", "vị trí tiêm", "1/3 trên", "mặt trước trong cẳng tay"], "clarification_prompt": "Bạn chọn vị trí tiêm ở đâu và kiểm tra vùng da đó thế nào?"},
+                                {"step_id": 10, "standard_action": "Vệ sinh tay, mang găng tay sạch (nếu cần)", "required_keywords": ["vệ sinh tay", "rửa tay", "mang găng"], "clarification_prompt": "Trước khi chạm vào da bệnh nhân để sát khuẩn, bạn xử lý tay mình ra sao?"},
+                                {"step_id": 11, "standard_action": "Sát khuẩn vùng tiêm rộng từ trong ra ngoài đường kính 10cm, chờ cho da thật khô", "required_keywords": ["sát khuẩn", "từ trong ra ngoài", "10cm", "chờ khô", "da thật khô"], "clarification_prompt": "Thao tác sát khuẩn vùng tiêm được thực hiện với nguyên tắc nào?"},
+                                {"step_id": 12, "standard_action": "Đuổi khí trong bơm tiêm", "required_keywords": ["đuổi khí", "bơm tiêm"], "clarification_prompt": "Trước khi đâm kim, bạn thao tác gì với bơm tiêm?"},
+                                {"step_id": 13, "standard_action": "Căng da, để mặt vát kim lên trên, đâm kim góc 15 độ so với mặt da", "required_keywords": ["căng da", "mặt vát lên trên", "đâm kim", "góc 15 độ", "10 đến 15 độ"], "clarification_prompt": "Khi đâm kim tiêm trong da, bạn cầm kim góc bao nhiêu và chú ý gì ở mặt vát?"},
+                                {"step_id": 14, "standard_action": "Bơm 1/10ml thuốc (nổi phồng da cam) và quan sát sắc diện người bệnh", "required_keywords": ["bơm thuốc", "1/10ml", "nổi phồng", "da cam", "quan sát", "sắc diện"], "clarification_prompt": "Sau khi đâm kim, bạn bơm thuốc thế nào và quan sát gì ở vị trí tiêm cũng như bệnh nhân?"},
+                                {"step_id": 15, "standard_action": "Rút kim theo hướng đâm vào", "required_keywords": ["rút kim", "hướng đâm vào", "nhanh"], "clarification_prompt": "Bơm xong, bạn lấy kim ra khỏi da như thế nào?"},
+                                {"step_id": 16, "standard_action": "Cố định kim an toàn", "required_keywords": ["cố định kim", "an toàn", "thùng rác sắc nhọn"], "clarification_prompt": "Cây kim vừa rút ra bạn xử lý ở đâu?"},
+                                {"step_id": 17, "standard_action": "Tháo găng tay, vệ sinh tay", "required_keywords": ["tháo găng", "vệ sinh tay", "rửa tay"], "clarification_prompt": "Xử lý kim xong, bạn làm gì với đôi tay?"},
+                                {"step_id": 18, "standard_action": "Khoanh tròn nơi tiêm nếu thử phản ứng thuốc", "required_keywords": ["khoanh tròn", "nơi tiêm", "thử phản ứng", "bút bi"], "clarification_prompt": "Vì đây là mũi tiêm thử phản ứng, bạn cần làm dấu gì tại vị trí tiêm?"},
+                                {"step_id": 19, "standard_action": "Dặn người bệnh không được chạm nơi tiêm", "required_keywords": ["dặn", "không chạm", "nơi tiêm", "không gãi"], "clarification_prompt": "Bạn dặn dò bệnh nhân điều quan trọng gì về nốt phồng vừa tiêm?"},
+                                {"step_id": 20, "standard_action": "Báo giải thích cho người bệnh biết việc đã xong, giúp người bệnh tiện nghi", "required_keywords": ["báo", "đã xong", "tiện nghi", "thoải mái"], "clarification_prompt": "Hoàn tất thủ thuật, bạn giao tiếp với bệnh nhân ra sao?"},
+                                {"step_id": 21, "standard_action": "Thu dọn dụng cụ, xử lý dụng cụ lây nhiễm đúng cách", "required_keywords": ["thu dọn", "dụng cụ", "lây nhiễm", "xử lý rác"], "clarification_prompt": "Mâm tiêm và rác y tế sẽ được bạn xử lý như thế nào?"},
+                                {"step_id": 22, "standard_action": "Ghi hồ sơ", "required_keywords": ["ghi hồ sơ", "ghi bệnh án"], "clarification_prompt": "Thao tác hành chính cuối cùng để lưu lại thông tin là gì?"}
+                            ],
+                            "distractor_actions": [
+                                "Lấy gòn ấn mạnh lên vị trí vừa tiêm trong da khiến thuốc bị đẩy ra ngoài.",
+                                "Đâm kim sâu 45 độ làm thuốc đi vào lớp mô dưới da (tiêm dưới da).",
+                                "Quên khoanh tròn nốt phồng sau khi tiêm thử test kháng sinh."
                             ]
+                        },
+                        {
+                            "id": "tiem_truyen_tinh_mach",
+                            "name": "Tiêm truyền tĩnh mạch (Kim luồn)",
+                            "scenarios": [
+                                "Bệnh nhân nam, 45 tuổi, nhập viện vì tiêu chảy cấp mất nước. Bác sĩ chỉ định truyền 1 chai NaCl 0.9% qua đường tĩnh mạch. Bạn hãy thực hiện thủ thuật này."
+                            ],
+                            "checklist": [
+                                {"step_id": 1, "standard_action": "Kiểm tra chỉ định, phiếu thuốc, lý do dùng thuốc, tiền sử dị ứng thuốc", "required_keywords": ["kiểm tra chỉ định", "phiếu thuốc", "dị ứng"], "clarification_prompt": "Trước khi chuẩn bị dụng cụ, bạn cần kiểm tra những thông tin y lệnh nào?"},
+                                {"step_id": 2, "standard_action": "Chuẩn bị dụng cụ, phương tiện đầy đủ, đảm bảo nguyên vẹn, còn hạn sử dụng, kiểm tra bộ dây, 1 bơm tiêm chứa NaCl 0,9% gắn với đoạn dây nối", "required_keywords": ["dụng cụ", "bộ dây", "bơm tiêm NaCl", "dây nối"], "clarification_prompt": "Bạn chuẩn bị những dụng cụ chuyên biệt nào cho tiêm truyền kim luồn?"},
+                                {"step_id": 3, "standard_action": "Chào hỏi, giới thiệu tên, nhiệm vụ", "required_keywords": ["chào", "giới thiệu", "nhiệm vụ"], "clarification_prompt": "Khi gặp bệnh nhân, bạn giao tiếp mở đầu như thế nào?"},
+                                {"step_id": 4, "standard_action": "Xác định đúng NB. Hỏi họ tên NB, năm sinh, địa chỉ, đối chiếu thông tin trên vòng đeo tay", "required_keywords": ["hỏi tên", "năm sinh", "đối chiếu", "vòng đeo tay"], "clarification_prompt": "Làm sao để chắc chắn bạn đang truyền dịch cho đúng bệnh nhân?"},
+                                {"step_id": 5, "standard_action": "Nhận định NB: hỏi tình trạng dị ứng, kiểm tra dấu sinh hiệu, cho Nb đi tiêu, tiểu, nhận định vị trí tiêm chọn TM", "required_keywords": ["dị ứng", "sinh hiệu", "tiêu tiểu", "chọn tĩnh mạch"], "clarification_prompt": "Bạn cần đánh giá tổng trạng, nhu cầu cơ bản và vị trí nào trước khi truyền?"},
+                                {"step_id": 6, "standard_action": "Vệ sinh tay", "required_keywords": ["vệ sinh tay", "rửa tay"], "clarification_prompt": "Trước khi lấy thuốc, bạn làm gì để đảm bảo vô khuẩn?"},
+                                {"step_id": 7, "standard_action": "Lấy dịch truyền và thuốc theo y lệnh (đọc nhãn thuốc lần 1)", "required_keywords": ["lấy dịch", "đọc nhãn lần 1"], "clarification_prompt": "Khi cầm chai dịch lên, bạn làm thao tác gì đầu tiên?"},
+                                {"step_id": 8, "standard_action": "Mở nắp chai dịch truyền, sát khuẩn nắp chai dịch truyền, để khô (kiểm tra lần 2)", "required_keywords": ["mở nắp", "sát khuẩn nắp", "đọc nhãn lần 2"], "clarification_prompt": "Bạn xử lý chai dịch truyền thế nào trước khi cắm dây?"},
+                                {"step_id": 9, "standard_action": "Khóa dây dịch truyền, cắm dây dịch truyền vào chai", "required_keywords": ["khóa dây", "cắm dây"], "clarification_prompt": "Trước khi cắm dây truyền vào chai, thao tác quan trọng trên bộ dây là gì?"},
+                                {"step_id": 10, "standard_action": "Đuổi khí hiệu quả: treo chai lên trụ, bóp bầu đếm giọt cho dịch vào 1/2-2/3 bầu, mở dẫn khí, đuổi khí vào bồn hạt đậu", "required_keywords": ["treo chai", "bóp bầu", "đuổi khí"], "clarification_prompt": "Làm thế nào để loại bỏ không khí ra khỏi dây truyền dịch?"},
+                                {"step_id": 11, "standard_action": "Vệ sinh tay, mang găng tay sạch", "required_keywords": ["rửa tay", "mang găng tay"], "clarification_prompt": "Trước khi thao tác trên tĩnh mạch bệnh nhân, bạn xử lý tay mình ra sao?"},
+                                {"step_id": 12, "standard_action": "Buộc dây thắt mạch cách vị trí tiêm 10 - 15 cm", "required_keywords": ["buộc dây", "thắt mạch", "garrot", "10 - 15 cm"], "clarification_prompt": "Để tĩnh mạch nổi rõ, bạn dùng dụng cụ gì và vị trí ở đâu?"},
+                                {"step_id": 13, "standard_action": "Sát khuẩn vùng tiêm rộng từ trong ra ngoài 5 cm hoặc từ dưới lên dọc theo tĩnh mạch", "required_keywords": ["sát khuẩn", "từ trong ra ngoài", "5 cm"], "clarification_prompt": "Bạn sát khuẩn vùng da tiêm theo nguyên tắc nào?"},
+                                {"step_id": 14, "standard_action": "Căng da, đâm kim mặt vát lên trên, góc 30-40 độ", "required_keywords": ["căng da", "mặt vát lên trên", "góc 30-40"], "clarification_prompt": "Tư thế đâm kim vào mạch máu của bạn như thế nào?"},
+                                {"step_id": 15, "standard_action": "Xác định kim đã vào tĩnh mạch bằng cách quan sát thấy máu chảy ngược ra ở đuôi kim", "required_keywords": ["thấy máu", "chảy ngược", "đuôi kim"], "clarification_prompt": "Làm sao để biết kim đã nằm đúng trong lòng mạch?"},
+                                {"step_id": 16, "standard_action": "Hạ góc độ kim xuống ngang mặt da luồn kim vào lòng mạch 1 đoạn ngắn", "required_keywords": ["hạ góc độ", "ngang mặt da", "luồn kim"], "clarification_prompt": "Thấy máu trào ra, bạn điều chỉnh góc kim và làm gì tiếp theo?"},
+                                {"step_id": 17, "standard_action": "Căng da và đẩy phần nhựa của kim luồn vào tĩnh mạch, tháo dây thắt mạch", "required_keywords": ["đẩy phần nhựa", "kim luồn", "tháo thắt mạch", "tháo garrot"], "clarification_prompt": "Bạn đưa ống nhựa vào mạch máu bằng cách nào và làm gì với garrot?"},
+                                {"step_id": 18, "standard_action": "Đè chặt tĩnh mạch nơi đầu phần nhựa kim luồn, rút bỏ nòng trong an toàn", "required_keywords": ["đè chặt", "tĩnh mạch", "rút nòng trong"], "clarification_prompt": "Để máu không chảy ồ ạt ra ngoài khi rút nòng kim sắt, bạn phải làm gì?"},
+                                {"step_id": 19, "standard_action": "Gắn bơm tiêm NaCl đuổi khí khoảng chết, tráng push-pause", "required_keywords": ["gắn bơm tiêm", "nacl", "tráng kim"], "clarification_prompt": "Sau khi rút nòng sắt, bạn dùng gì để thử sự thông thương của kim luồn?"},
+                                {"step_id": 20, "standard_action": "Thay bơm tiêm bằng dây dịch truyền, mở khóa cho dịch chảy chậm", "required_keywords": ["thay bơm tiêm", "dây dịch truyền", "mở khóa"], "clarification_prompt": "Khâu kết nối để bắt đầu truyền dịch diễn ra thế nào?"},
+                                {"step_id": 21, "standard_action": "Cố định kim và dây truyền an toàn", "required_keywords": ["cố định", "kim", "dây truyền", "băng keo"], "clarification_prompt": "Bạn làm gì để kim và dây không bị tuột khỏi tay bệnh nhân?"},
+                                {"step_id": 22, "standard_action": "Tháo găng tay, vệ sinh tay", "required_keywords": ["tháo găng", "rửa tay"], "clarification_prompt": "Xử lý vùng tiêm xong, bạn thao tác gì với tay mình?"},
+                                {"step_id": 23, "standard_action": "Điều chỉnh giọt theo y lệnh, dán nhãn ghi nhận", "required_keywords": ["điều chỉnh giọt", "dán nhãn"], "clarification_prompt": "Bạn kiểm soát tốc độ dịch chảy bằng cách nào?"},
+                                {"step_id": 24, "standard_action": "Dặn dò người bệnh những điều cần thiết, báo đã xong, cho nằm tư thế tiện nghi", "required_keywords": ["dặn dò", "báo xong", "tiện nghi"], "clarification_prompt": "Bạn căn dặn bệnh nhân điều gì trong quá trình truyền?"},
+                                {"step_id": 25, "standard_action": "Thu dọn dụng cụ, xử lý chất thải đúng cách", "required_keywords": ["thu dọn", "xử lý chất thải", "rác"], "clarification_prompt": "Mâm dụng cụ và rác y tế được xử lý ra sao?"},
+                                {"step_id": 26, "standard_action": "Vệ sinh tay, ghi hồ sơ", "required_keywords": ["rửa tay", "ghi hồ sơ"], "clarification_prompt": "Thao tác hành chính cuối cùng là gì?"}
+                            ],
+                            "distractor_actions": [
+                                "Cắm dây truyền dịch vào chai khi chưa khóa dây dẫn đến dịch chảy tự do tràn ra ngoài.",
+                                "Rút nòng kim sắt ra trước khi luồn hoàn toàn phần nhựa vào tĩnh mạch làm gập nát đầu kim luồn.",
+                                "Quên đè tĩnh mạch đầu kim luồn khi rút nòng sắt làm máu phụt ồ ạt ra ngoài."
+                            ],
+                            "prompt_context": "Quy trình kỹ thuật tiêm truyền tĩnh mạch kim luồn chuẩn 26 bước."
                         }
                     ]
                 },
                 {
-                    id: "vital_signs",
-                    title: "3. Đo huyết áp động mạch",
-                    skills: [
-                        {
-                            id: "do_huyet_ap",
-                            name: "Quy trình đo huyết áp cánh tay",
-                            prompt_context: "Quy trình đo huyết áp động mạch cánh tay đúng kỹ thuật.",
-                            checklist: [
-                                { step_id: 1, standard_action: "Cho người bệnh nghỉ ngơi ít nhất 5 phút, giải thích quy trình", required_keywords: ["nghỉ ngơi", "5 phút", "giải thích"], clarification_prompt: "Trước khi đo huyết áp, bệnh nhân cần được nghỉ ngơi bao lâu?" },
-                                { step_id: 2, standard_action: "Tư thế ngồi chuẩn: Tay ngang mức tim, chân chạm phẳng sàn", required_keywords: ["tư thế", "ngang tim", "chân chạm sàn"], clarification_prompt: "Tư thế tay và chân của bệnh nhân được chuẩn bị thế nào?" },
-                                { step_id: 3, standard_action: "Quấn bao đo vừa vặn, mép dưới cách nếp khuỷu 2 - 3 cm", required_keywords: ["quấn bao", "2-3cm", "cách nếp khuỷu"], clarification_prompt: "Vị trí mép dưới bao đo cách nếp gấp khuỷu tay bao nhiêu cm?" },
-                                { step_id: 4, standard_action: "Bắt mạch quay, bơm bóng tìm mức mất mạch ước lượng HA tâm thu", required_keywords: ["bắt mạch quay", "bơm bóng", "mất mạch"], clarification_prompt: "Làm thế nào để ước lượng huyết áp tâm thu trước khi nghe?" },
-                                { step_id: 5, standard_action: "Đặt loa ống nghe lên vị trí động mạch cánh tay ở nếp khuỷu", required_keywords: ["đặt ống nghe", "động mạch cánh tay", "nếp khuỷu"], clarification_prompt: "Bạn đặt loa ống nghe ở vị trí nào? Có được nhét dưới bao không?" },
-                                { step_id: 6, standard_action: "Bơm bóng lên trên mức mất mạch 30 mmHg, xả chậm 2-3 mmHg/s", required_keywords: ["30 mmhg", "xả chậm", "2-3 mmhg"], clarification_prompt: "Bạn bơm áp lực cao hơn mức mất mạch bao nhiêu và tốc độ xả?" },
-                                { step_id: 7, standard_action: "Xác định Korotkoff I (tâm thu) và Korotkoff V (tâm trương)", required_keywords: ["tiếng đập đầu tiên", "tâm thu", "mất hẳn", "tâm trương"], clarification_prompt: "Dấu hiệu âm thanh Korotkoff nào tương ứng với HA tâm thu và tâm trương?" },
-                                { step_id: 8, standard_action: "Xả hết hơi, tháo bao đo, thông báo kết quả và ghi hồ sơ", required_keywords: ["xả hết hơi", "tháo bao", "thông báo", "ghi hồ sơ"], clarification_prompt: "Sau khi nghe xong, bạn hoàn tất quy trình ra sao?" }
-                            ]
-                        }
-                    ]
+                    "id": "nursing_other",
+                    "title": "2. Kỹ năng điều dưỡng cơ bản",
+                    "skills": [
+  {
+    "id": "cat_chi_vet_khau",
+    "name": "Cắt chỉ vết khâu (27 bước)",
+    "prompt_context": "Quy trình cắt chỉ vết khâu chuẩn 27 bước.",
+    "scenarios": [
+      "Bệnh nhân nam, 45 tuổi, mổ nội soi cắt ruột thừa ngày thứ 7. Vết mổ khô, lành tốt, không sưng đỏ. Bác sĩ chỉ định cắt chỉ vết khâu.",
+      "Bệnh nhân nữ, 30 tuổi, khâu vết thương rách da cẳng chân do tai nạn giao thông ngày thứ 10. Vết thương đã liền tốt. Bác sĩ chỉ định cắt chỉ.",
+      "Bệnh nhân nam, 60 tuổi, phẫu thuật thoát vị bẹn ngày thứ 8. Bác sĩ chỉ định cắt chỉ ngắt quãng."
+    ],
+    "checklist": [
+      {
+        "step_id": 1,
+        "standard_action": "Chào hỏi, giới thiệu bản thân",
+        "required_keywords": [
+          "chào",
+          "giới thiệu",
+          "tên"
+        ],
+        "clarification_prompt": "Khi tiếp xúc với người bệnh lần đầu, bạn sẽ nói gì?"
+      },
+      {
+        "step_id": 2,
+        "standard_action": "Xác định đúng người bệnh",
+        "required_keywords": [
+          "hỏi tên",
+          "tuổi",
+          "đối chiếu",
+          "người bệnh"
+        ],
+        "clarification_prompt": "Bạn làm cách nào để chắc chắn mình đang cắt chỉ đúng bệnh nhân?"
+      },
+      {
+        "step_id": 3,
+        "standard_action": "Báo giải thích cho người bệnh biết",
+        "required_keywords": [
+          "báo",
+          "giải thích",
+          "cắt chỉ"
+        ],
+        "clarification_prompt": "Bạn sẽ nói gì với người bệnh về mục đích thủ thuật để họ yên tâm?"
+      },
+      {
+        "step_id": 4,
+        "standard_action": "Vệ sinh tay thường quy",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Trước khi thăm khám, bạn cần làm gì với đôi tay của mình?"
+      },
+      {
+        "step_id": 5,
+        "standard_action": "Nhận định tình trạng người bệnh",
+        "required_keywords": [
+          "nhận định",
+          "tình trạng",
+          "người bệnh",
+          "tổng trạng"
+        ],
+        "clarification_prompt": "Trước khi làm thủ thuật, bạn đánh giá yếu tố toàn thân nào của người bệnh?"
+      },
+      {
+        "step_id": 6,
+        "standard_action": "Nhận định tình trạng vết khâu",
+        "required_keywords": [
+          "nhận định",
+          "vết khâu",
+          "kiểm tra",
+          "sưng",
+          "đỏ",
+          "lành"
+        ],
+        "clarification_prompt": "Bạn cần quan sát và đánh giá những gì tại vị trí sắp cắt chỉ?"
+      },
+      {
+        "step_id": 7,
+        "standard_action": "Vệ sinh tay thường quy",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Sau khi nhận định xong và đi chuẩn bị dụng cụ, bạn làm gì?"
+      },
+      {
+        "step_id": 8,
+        "standard_action": "Chuẩn bị dụng cụ đầy đủ và phù hợp",
+        "required_keywords": [
+          "chuẩn bị",
+          "dụng cụ",
+          "đầy đủ",
+          "phù hợp",
+          "kéo cắt chỉ",
+          "nhíp",
+          "mâm vô khuẩn"
+        ],
+        "clarification_prompt": "Bạn cần những dụng cụ y tế nào để thực hiện việc cắt chỉ?"
+      },
+      {
+        "step_id": 9,
+        "standard_action": "Bộc lộ vùng vết khâu (giữ cho người bệnh được kín đáo và thoải mái)",
+        "required_keywords": [
+          "bộc lộ",
+          "vết khâu",
+          "kín đáo",
+          "thoải mái"
+        ],
+        "clarification_prompt": "Bạn bộc lộ vị trí thao tác như thế nào để đảm bảo sự riêng tư cho bệnh nhân?"
+      },
+      {
+        "step_id": 10,
+        "standard_action": "Đặt tấm lót không thấm phía dưới nơi vị trí vết khâu",
+        "required_keywords": [
+          "đặt tấm lót",
+          "không thấm",
+          "phía dưới",
+          "dưới vết khâu"
+        ],
+        "clarification_prompt": "Làm sao để bảo vệ giường bệnh không bị dính dịch/máu bẩn?"
+      },
+      {
+        "step_id": 11,
+        "standard_action": "Vệ sinh tay thường quy, mang găng tay sạch",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay",
+          "mang găng tay sạch",
+          "đeo găng"
+        ],
+        "clarification_prompt": "Trước khi chạm vào mâm vô khuẩn và tháo băng, bạn xử lý tay mình thế nào?"
+      },
+      {
+        "step_id": 12,
+        "standard_action": "Mở khăn mâm dụng cụ vô khuẩn",
+        "required_keywords": [
+          "mở khăn",
+          "mâm",
+          "vô khuẩn"
+        ],
+        "clarification_prompt": "Bạn thao tác thế nào với bộ mâm dụng cụ đã chuẩn bị?"
+      },
+      {
+        "step_id": 13,
+        "standard_action": "Lấy dụng cụ vô khuẩn an toàn",
+        "required_keywords": [
+          "lấy dụng cụ",
+          "vô khuẩn",
+          "an toàn",
+          "kềm tiếp tế"
+        ],
+        "clarification_prompt": "Bạn dùng dụng cụ gì để gắp đồ vật bên trong mâm vô khuẩn?"
+      },
+      {
+        "step_id": 14,
+        "standard_action": "Sắp xếp dụng cụ trong mâm",
+        "required_keywords": [
+          "sắp xếp",
+          "dụng cụ",
+          "trong mâm"
+        ],
+        "clarification_prompt": "Sau khi lấy kềm tiếp tế, bạn thao tác thế nào với đồ dùng trong mâm?"
+      },
+      {
+        "step_id": 15,
+        "standard_action": "Tháo băng bẩn (bằng kềm sạch hoặc găng tay sạch), rửa lại tay (nếu cần).",
+        "required_keywords": [
+          "tháo băng bẩn",
+          "kềm sạch",
+          "găng tay sạch",
+          "rửa lại tay"
+        ],
+        "clarification_prompt": "Bạn gỡ lớp băng cũ đang che vết khâu bằng cách nào?"
+      },
+      {
+        "step_id": 16,
+        "standard_action": "Sát khuẩn vết khâu và vùng da xung quanh an toàn",
+        "required_keywords": [
+          "sát khuẩn",
+          "vết khâu",
+          "vùng da xung quanh",
+          "từ trong ra ngoài"
+        ],
+        "clarification_prompt": "Nguyên tắc vô khuẩn vết khâu trước khi cắt chỉ được thực hiện như thế nào?"
+      },
+      {
+        "step_id": 17,
+        "standard_action": "Đặt gạc ở vị trí an toàn gần vết khâu.",
+        "required_keywords": [
+          "đặt gạc",
+          "vị trí an toàn",
+          "gần vết khâu"
+        ],
+        "clarification_prompt": "Bạn chuẩn bị gạc ở đâu để hứng các mối chỉ sau khi cắt?"
+      },
+      {
+        "step_id": 18,
+        "standard_action": "Dùng kéo cắt từng mối chỉ nhẹ nhàng. (chỉ nằm trên da không được chui xuống dưới da).",
+        "required_keywords": [
+          "kéo cắt chỉ",
+          "từng mối",
+          "nhẹ nhàng",
+          "phần chỉ trên da không chui xuống",
+          "kéo sát chân chỉ",
+          "nhíp nhấc mối chỉ"
+        ],
+        "clarification_prompt": "Khi dùng kéo và nhíp để cắt chỉ, thao tác quan trọng nhất để tránh nhiễm trùng mô bên dưới là gì?"
+      },
+      {
+        "step_id": 19,
+        "standard_action": "Đặt từng mối chỉ lên miếng gạc để kiểm tra sự nguyên vẹn của mối chỉ.",
+        "required_keywords": [
+          "đặt lên gạc",
+          "từng mối chỉ",
+          "kiểm tra",
+          "nguyên vẹn",
+          "đếm mối chỉ"
+        ],
+        "clarification_prompt": "Cắt xong mối chỉ, bạn làm gì với nó để đảm bảo không bị sót chỉ dưới da?"
+      },
+      {
+        "step_id": 20,
+        "standard_action": "Sát khuẩn lại vết khâu, rộng ra xung quanh 5cm",
+        "required_keywords": [
+          "sát khuẩn lại",
+          "vết khâu",
+          "rộng ra 5cm",
+          "xung quanh"
+        ],
+        "clarification_prompt": "Sau khi rút hết toàn bộ chỉ, bạn xử lý vùng da vết khâu như thế nào?"
+      },
+      {
+        "step_id": 21,
+        "standard_action": "Che chở vết khâu (rộng ra 5cm)",
+        "required_keywords": [
+          "che chở",
+          "vết khâu",
+          "rộng ra 5cm",
+          "đặt gạc"
+        ],
+        "clarification_prompt": "Làm sao để bảo vệ vết khâu sau khi đã sát khuẩn lại?"
+      },
+      {
+        "step_id": 22,
+        "standard_action": "Cố định băng bằng băng keo hoặc băng cuộn (nếu cần)",
+        "required_keywords": [
+          "cố định",
+          "băng keo",
+          "dán keo",
+          "băng cuộn"
+        ],
+        "clarification_prompt": "Bạn dùng gì để giữ cố định miếng gạc trên vết khâu?"
+      },
+      {
+        "step_id": 23,
+        "standard_action": "Tháo găng tay, vệ sinh tay thường quy",
+        "required_keywords": [
+          "tháo găng",
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Sau khi dán băng keo xong, bạn xử lý đôi tay của mình thế nào?"
+      },
+      {
+        "step_id": 24,
+        "standard_action": "Báo cho người bệnh biết việc đã xong, cho người bệnh nằm lại tư thế tiện nghi",
+        "required_keywords": [
+          "báo xong",
+          "tư thế tiện nghi",
+          "thoải mái"
+        ],
+        "clarification_prompt": "Kết thúc thủ thuật, bạn giao tiếp thế nào và dặn dò, sắp xếp cho bệnh nhân ra sao?"
+      },
+      {
+        "step_id": 25,
+        "standard_action": "Thu dọn dụng cụ, xử lý dụng cụ và chất thải lây nhiễm đúng cách",
+        "required_keywords": [
+          "thu dọn",
+          "dụng cụ",
+          "chất thải",
+          "phân loại rác",
+          "rác y tế"
+        ],
+        "clarification_prompt": "Bạn làm gì với mâm dụng cụ và những miếng gạc có dính mối chỉ?"
+      },
+      {
+        "step_id": 26,
+        "standard_action": "Vệ sinh tay thường quy",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Sau khi phân loại rác xong, thao tác kiểm soát nhiễm khuẩn tiếp theo là gì?"
+      },
+      {
+        "step_id": 27,
+        "standard_action": "Ghi hồ sơ",
+        "required_keywords": [
+          "ghi hồ sơ",
+          "ghi bệnh án",
+          "ghi chép"
+        ],
+        "clarification_prompt": "Thao tác cuối cùng để lưu lại bằng chứng đã cắt chỉ là gì?"
+      }
+    ],
+    "distractor_actions": [
+      "Rút phần chỉ dính bẩn (phần lộ trên mặt da) chui qua mô dưới da gây nhiễm trùng vết khâu.",
+      "Cắt cả hai nhánh bên của nút thắt chỉ khiến đoạn chỉ chìm dưới da không thể rút ra.",
+      "Bỏ mối chỉ vừa cắt vào bồn hạt đậu hoặc thùng rác mà không xếp lên gạc để kiểm tra đếm số lượng.",
+      "Sát khuẩn lại vết khâu bằng cồn 70 độ gây xót thay vì dùng Povidine/Betadine vô khuẩn.",
+      "Mở khăn mâm vô khuẩn trước khi tháo găng tay tháo băng bẩn (làm vi khuẩn văng vào mâm)."
+    ]
+  },
+  {
+    "id": "thay_bang_vet_thuong",
+    "name": "Thay băng vết thương (28 bước)",
+    "prompt_context": "Quy trình kỹ thuật thay băng vết thương chuẩn 28 bước.",
+    "scenarios": [
+      "Bệnh nhân nam, 35 tuổi, mổ ruột thừa ngày thứ 3. Vết mổ khô, không rỉ dịch. Bác sĩ chỉ định thay băng vết thương.",
+      "Bệnh nhân nữ, 25 tuổi, có vết thương rách da cẳng tay do tai nạn sinh hoạt đã khâu ngày thứ 2. Bác sĩ chỉ định thay băng.",
+      "Bệnh nhân nam, 50 tuổi, có vết mổ nội soi cắt túi mật ngày thứ 4. Vết mổ tốt, không sưng đỏ. Bác sĩ chỉ định thay băng."
+    ],
+    "checklist": [
+      {
+        "step_id": 1,
+        "standard_action": "Chào hỏi, giới thiệu bản thân",
+        "required_keywords": [
+          "chào",
+          "giới thiệu",
+          "tên"
+        ],
+        "clarification_prompt": "Khi đến gặp bệnh nhân, bạn sẽ nói gì đầu tiên?"
+      },
+      {
+        "step_id": 2,
+        "standard_action": "Xác định đúng người bệnh",
+        "required_keywords": [
+          "hỏi tên",
+          "tuổi",
+          "đối chiếu"
+        ],
+        "clarification_prompt": "Bạn làm cách nào để xác định mình đang thay băng cho đúng người bệnh?"
+      },
+      {
+        "step_id": 3,
+        "standard_action": "Báo giải thích cho người bệnh biết",
+        "required_keywords": [
+          "báo",
+          "giải thích",
+          "thay băng"
+        ],
+        "clarification_prompt": "Bạn cần nói gì về việc mình sắp làm để bệnh nhân hợp tác?"
+      },
+      {
+        "step_id": 4,
+        "standard_action": "Vệ sinh tay thường quy",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Trước khi thăm khám nhận định, bạn cần làm gì với đôi tay của mình?"
+      },
+      {
+        "step_id": 5,
+        "standard_action": "Nhận định tình trạng người bệnh",
+        "required_keywords": [
+          "nhận định",
+          "tình trạng",
+          "người bệnh",
+          "tổng trạng"
+        ],
+        "clarification_prompt": "Bạn cần đánh giá yếu tố nào về toàn thân của người bệnh trước khi thực hiện thủ thuật?"
+      },
+      {
+        "step_id": 6,
+        "standard_action": "Nhận định tình trạng vết thương",
+        "required_keywords": [
+          "nhận định",
+          "vết thương",
+          "vết mổ"
+        ],
+        "clarification_prompt": "Bạn cần kiểm tra những yếu tố gì ở vị trí sẽ thao tác?"
+      },
+      {
+        "step_id": 7,
+        "standard_action": "Vệ sinh tay thường quy",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Sau khi nhận định bệnh nhân xong và chuẩn bị đi lấy dụng cụ, bạn làm gì?"
+      },
+      {
+        "step_id": 8,
+        "standard_action": "Chuẩn bị dụng cụ đầy đủ và phù hợp",
+        "required_keywords": [
+          "chuẩn bị",
+          "dụng cụ",
+          "đầy đủ",
+          "phù hợp",
+          "mâm vô khuẩn"
+        ],
+        "clarification_prompt": "Bạn chuẩn bị những dụng cụ gì cho việc thay băng?"
+      },
+      {
+        "step_id": 9,
+        "standard_action": "Chuẩn bị tư thế người bệnh phù hợp (giữ cho người bệnh được kín đáo và thoải mái)",
+        "required_keywords": [
+          "tư thế",
+          "phù hợp",
+          "kín đáo",
+          "thoải mái"
+        ],
+        "clarification_prompt": "Bạn yêu cầu người bệnh nằm/ngồi như thế nào và chú ý điều gì?"
+      },
+      {
+        "step_id": 10,
+        "standard_action": "Đặt tấm lót không thấm phía dưới nơi vị trí vết thương",
+        "required_keywords": [
+          "đặt tấm lót",
+          "không thấm",
+          "phía dưới",
+          "dưới vết thương"
+        ],
+        "clarification_prompt": "Làm sao để giữ vệ sinh giường bệnh không bị dính dịch/máu khi thay băng?"
+      },
+      {
+        "step_id": 11,
+        "standard_action": "Vệ sinh tay thường quy, mang găng tay sạch",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay",
+          "mang găng tay sạch"
+        ],
+        "clarification_prompt": "Trước khi chạm vào mâm và vết thương, bạn xử lý tay mình thế nào?"
+      },
+      {
+        "step_id": 12,
+        "standard_action": "Mở khăn mâm dụng cụ vô khuẩn",
+        "required_keywords": [
+          "mở khăn",
+          "mâm",
+          "vô khuẩn"
+        ],
+        "clarification_prompt": "Bạn thao tác thế nào với mâm dụng cụ đã được chuẩn bị?"
+      },
+      {
+        "step_id": 13,
+        "standard_action": "Lấy kềm vô khuẩn an toàn",
+        "required_keywords": [
+          "lấy kềm",
+          "vô khuẩn",
+          "an toàn",
+          "kềm tiếp tế"
+        ],
+        "clarification_prompt": "Bạn sử dụng dụng cụ gì để gắp đồ trong mâm?"
+      },
+      {
+        "step_id": 14,
+        "standard_action": "Sắp xếp dụng cụ trong mâm",
+        "required_keywords": [
+          "sắp xếp",
+          "dụng cụ",
+          "trong mâm"
+        ],
+        "clarification_prompt": "Sau khi lấy kềm vô khuẩn, bạn làm gì với các đồ vật trong mâm?"
+      },
+      {
+        "step_id": 15,
+        "standard_action": "Tháo băng bẩn (bằng kềm sạch hoặc găng tay sạch), rửa lại tay (nếu cần)",
+        "required_keywords": [
+          "tháo băng bẩn",
+          "kềm sạch",
+          "găng tay",
+          "rửa lại tay"
+        ],
+        "clarification_prompt": "Bạn gỡ lớp băng cũ ra bằng cách nào và bằng dụng cụ gì?"
+      },
+      {
+        "step_id": 16,
+        "standard_action": "Rửa bên trong vết thương: từ trong ra ngoài rìa (từ vùng trên cao xuống thấp, từ bên xa đến bên gần) với dung dịch rửa vết thương",
+        "required_keywords": [
+          "rửa bên trong",
+          "từ trong ra ngoài",
+          "trên xuống dưới",
+          "xa đến gần",
+          "dung dịch rửa"
+        ],
+        "clarification_prompt": "Nguyên tắc chiều hướng khi bạn rửa bên trong vết thương là gì?"
+      },
+      {
+        "step_id": 17,
+        "standard_action": "Rửa vùng da xung quanh vết thương rộng ra ngoài 5cm bằng dung dịch rửa vết thương",
+        "required_keywords": [
+          "rửa xung quanh",
+          "da xung quanh",
+          "rộng ra 5cm",
+          "dung dịch rửa"
+        ],
+        "clarification_prompt": "Sau khi rửa bên trong, bạn xử lý vùng da xung quanh như thế nào, khoảng cách bao nhiêu?"
+      },
+      {
+        "step_id": 18,
+        "standard_action": "Dùng gạc miếng chậm khô bên trong vết thương (nếu cần)",
+        "required_keywords": [
+          "gạc",
+          "chậm khô",
+          "thấm khô",
+          "bên trong"
+        ],
+        "clarification_prompt": "Bạn làm gì để vết thương không bị ứ đọng nước rửa?"
+      },
+      {
+        "step_id": 19,
+        "standard_action": "Lau khô vùng da xung quanh vết thương",
+        "required_keywords": [
+          "lau khô",
+          "vùng da xung quanh"
+        ],
+        "clarification_prompt": "Vùng da xung quanh sau khi rửa cần được làm gì?"
+      },
+      {
+        "step_id": 20,
+        "standard_action": "Sát khuẩn vùng da xung quanh vết thương bằng dung dịch sát khuẩn da",
+        "required_keywords": [
+          "sát khuẩn",
+          "da xung quanh",
+          "dung dịch sát khuẩn",
+          "cồn"
+        ],
+        "clarification_prompt": "Bạn dùng dung dịch gì và bôi ở đâu để vô khuẩn vùng da quanh vết thương?"
+      },
+      {
+        "step_id": 21,
+        "standard_action": "Đắp thuốc lên vết thương nếu có y lệnh",
+        "required_keywords": [
+          "đắp thuốc",
+          "nếu có y lệnh",
+          "thuốc"
+        ],
+        "clarification_prompt": "Bạn có bôi gì trực tiếp lên vết thương không?"
+      },
+      {
+        "step_id": 22,
+        "standard_action": "Đặt băng gạc lên vết thương (rộng ra 3-5 cm)",
+        "required_keywords": [
+          "đặt băng gạc",
+          "rộng ra 3-5 cm",
+          "phủ gạc"
+        ],
+        "clarification_prompt": "Bạn che phủ vết thương bằng gì và kích thước che phủ ra sao?"
+      },
+      {
+        "step_id": 23,
+        "standard_action": "Cố định băng bằng băng keo hoặc băng cuộn (nếu cần)",
+        "required_keywords": [
+          "cố định",
+          "băng keo",
+          "dán keo",
+          "băng cuộn"
+        ],
+        "clarification_prompt": "Bạn dùng gì để giữ cố định miếng gạc trên vết thương?"
+      },
+      {
+        "step_id": 24,
+        "standard_action": "Tháo găng tay, vệ sinh tay thường quy",
+        "required_keywords": [
+          "tháo găng",
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Sau khi dán băng keo xong, bạn xử lý đôi tay của mình thế nào?"
+      },
+      {
+        "step_id": 25,
+        "standard_action": "Báo cho người bệnh biết việc đã xong, cho người bệnh nằm lại tư thế tiện nghi",
+        "required_keywords": [
+          "báo xong",
+          "tư thế tiện nghi",
+          "thoải mái"
+        ],
+        "clarification_prompt": "Hoàn tất thủ thuật, bạn dặn dò và sắp xếp cho bệnh nhân ra sao?"
+      },
+      {
+        "step_id": 26,
+        "standard_action": "Thu dọn dụng cụ, xử lý dụng cụ và chất thải lây nhiễm đúng cách",
+        "required_keywords": [
+          "thu dọn",
+          "dụng cụ",
+          "chất thải",
+          "phân loại rác",
+          "rác y tế"
+        ],
+        "clarification_prompt": "Bạn làm gì với mâm dụng cụ dơ và các loại băng gạc bẩn?"
+      },
+      {
+        "step_id": 27,
+        "standard_action": "Vệ sinh tay thường quy",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Sau khi đã thu dọn xong xuôi, bạn làm gì trước khi ghi hồ sơ?"
+      },
+      {
+        "step_id": 28,
+        "standard_action": "Ghi hồ sơ",
+        "required_keywords": [
+          "ghi hồ sơ",
+          "ghi bệnh án",
+          "ghi chép"
+        ],
+        "clarification_prompt": "Thao tác cuối cùng về mặt hành chính là gì?"
+      }
+    ],
+    "distractor_actions": [
+      "Dùng kềm vô khuẩn trong mâm để kẹp gỡ miếng gạc bẩn trên vết thương.",
+      "Rửa vết thương theo chiều từ ngoài vào trong tâm vết thương.",
+      "Sát khuẩn thẳng vào bên trong lòng vết thương sạch bằng cồn 70 độ.",
+      "Bỏ qua bước đặt tấm lót không thấm dưới vị trí vết thương.",
+      "Mở khăn mâm dụng cụ vô khuẩn trước khi tháo băng bẩn và rửa tay."
+    ]
+  },
+  {
+    "id": "dat_thong_mui_da_day",
+    "name": "Đặt ống thông mũi - dạ dày (26 bước)",
+    "prompt_context": "Quy trình kỹ thuật đặt ống thông mũi - dạ dày chuẩn 26 bước.",
+    "scenarios": [
+      "Bệnh nhân nam, 65 tuổi, nhập viện vì xuất huyết tiêu hóa trên. Bác sĩ chỉ định đặt ống thông mũi - dạ dày để dẫn lưu dịch dạ dày theo dõi.",
+      "Bệnh nhân nữ, 40 tuổi, hôn mê sau chấn thương sọ não, đang thở máy. Bác sĩ chỉ định đặt ống thông mũi - dạ dày để nuôi ăn qua ống.",
+      "Bệnh nhân nam, 50 tuổi, ngộ độc thực phẩm cấp tính đến sớm. Bác sĩ chỉ định đặt ống thông mũi - dạ dày để rửa dạ dày."
+    ],
+    "checklist": [
+      {
+        "step_id": 1,
+        "standard_action": "Chào người bệnh và giới thiệu bản thân",
+        "required_keywords": [
+          "chào",
+          "giới thiệu",
+          "tên"
+        ],
+        "clarification_prompt": "Bạn sẽ nói gì với người bệnh khi mới bước vào phòng?"
+      },
+      {
+        "step_id": 2,
+        "standard_action": "Xác định đúng người bệnh",
+        "required_keywords": [
+          "hỏi tên",
+          "tuổi",
+          "đối chiếu",
+          "người bệnh"
+        ],
+        "clarification_prompt": "Làm sao để biết bạn đang thực hiện thủ thuật đúng cho bệnh nhân này?"
+      },
+      {
+        "step_id": 3,
+        "standard_action": "Báo và giải thích cho người bệnh",
+        "required_keywords": [
+          "báo",
+          "giải thích",
+          "đặt ống thông",
+          "mục đích"
+        ],
+        "clarification_prompt": "Bạn cần nói gì về thủ thuật sắp làm để người bệnh hiểu và hợp tác?"
+      },
+      {
+        "step_id": 4,
+        "standard_action": "Nhận định tình trạng của người bệnh",
+        "required_keywords": [
+          "nhận định",
+          "tình trạng",
+          "khám"
+        ],
+        "clarification_prompt": "Trước khi làm thủ thuật, bạn cần đánh giá những gì ở người bệnh?"
+      },
+      {
+        "step_id": 5,
+        "standard_action": "Vệ sinh tay thường qui",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Bạn cần làm gì để đảm bảo vô khuẩn trước khi chuẩn bị dụng cụ?"
+      },
+      {
+        "step_id": 6,
+        "standard_action": "Chuẩn bị dụng cụ đầy đủ và phù hợp",
+        "required_keywords": [
+          "chuẩn bị",
+          "dụng cụ",
+          "đầy đủ",
+          "ống thông"
+        ],
+        "clarification_prompt": "Bạn cần những dụng cụ gì cho thủ thuật này?"
+      },
+      {
+        "step_id": 7,
+        "standard_action": "Cho người bệnh nằm tư thế Fowler cao (nằm đầu cao 45 độ)",
+        "required_keywords": [
+          "tư thế Fowler cao",
+          "đầu cao 45 độ",
+          "nằm cao"
+        ],
+        "clarification_prompt": "Người bệnh cần nằm ở tư thế nào để thực hiện thủ thuật?"
+      },
+      {
+        "step_id": 8,
+        "standard_action": "Choàng tấm vải không thấm và khăn bông qua cổ người bệnh",
+        "required_keywords": [
+          "choàng vải",
+          "khăn bông",
+          "qua cổ",
+          "không thấm"
+        ],
+        "clarification_prompt": "Bạn cần trải khăn như thế nào để giữ vệ sinh cho người bệnh?"
+      },
+      {
+        "step_id": 9,
+        "standard_action": "Vệ sinh 2 lỗ mũi",
+        "required_keywords": [
+          "vệ sinh",
+          "lỗ mũi",
+          "làm sạch mũi"
+        ],
+        "clarification_prompt": "Bạn cần làm sạch vị trí nào trước khi đặt ống?"
+      },
+      {
+        "step_id": 10,
+        "standard_action": "Đặt bồn hạt đậu cạnh má",
+        "required_keywords": [
+          "bồn hạt đậu",
+          "cạnh má"
+        ],
+        "clarification_prompt": "Bạn để bồn hạt đậu ở đâu?"
+      },
+      {
+        "step_id": 11,
+        "standard_action": "Vệ sinh tay thường qui, mang găng tay sạch",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay",
+          "mang găng tay sạch",
+          "đeo găng"
+        ],
+        "clarification_prompt": "Bạn cần làm gì với đôi tay trước khi chạm vào ống thông?"
+      },
+      {
+        "step_id": 12,
+        "standard_action": "Đo ống từ chóp mũi -> dái tai -> trung điểm của mũi ức và rốn, làm dấu vị trí đo.",
+        "required_keywords": [
+          "đo ống",
+          "chóp mũi",
+          "dái tai",
+          "trung điểm",
+          "mũi ức",
+          "rốn",
+          "làm dấu"
+        ],
+        "clarification_prompt": "Bạn đo chiều dài ống thông như thế nào và đến đâu?"
+      },
+      {
+        "step_id": 13,
+        "standard_action": "Làm trơn đầu ống thông, vẩy đầu ống cho ráo nước.",
+        "required_keywords": [
+          "làm trơn",
+          "đầu ống",
+          "vẩy",
+          "ráo nước",
+          "bôi trơn"
+        ],
+        "clarification_prompt": "Trước khi đưa ống vào mũi, bạn cần xử lý đầu ống như thế nào?"
+      },
+      {
+        "step_id": 14,
+        "standard_action": "Đưa ống vào một lỗ mũi đến vòm họng và dừng lại. Nghiêng nhẹ cằm xuống và yêu cầu người bệnh nuốt.",
+        "required_keywords": [
+          "đưa ống",
+          "lỗ mũi",
+          "vòm họng",
+          "dừng lại",
+          "nghiêng cằm",
+          "yêu cầu nuốt",
+          "bảo nuốt"
+        ],
+        "clarification_prompt": "Khi đưa ống qua mũi đến họng, bạn thao tác thế nào và hướng dẫn người bệnh làm gì?"
+      },
+      {
+        "step_id": 15,
+        "standard_action": "Dùng que đè lưỡi kiểm tra ống qua khỏi hầu.",
+        "required_keywords": [
+          "que đè lưỡi",
+          "kiểm tra",
+          "qua hầu",
+          "xem họng"
+        ],
+        "clarification_prompt": "Làm sao để chắc chắn ống thông đã đi xuống đúng đường và không bị cuộn ở họng?"
+      },
+      {
+        "step_id": 16,
+        "standard_action": "Đưa ống thông vào tiếp tục theo nhịp nuốt của người bệnh, mỗi lần đưa khoảng 5 - 10 cm (2-4 inch). Đưa ống thông đến mức làm dấu.",
+        "required_keywords": [
+          "đưa tiếp",
+          "theo nhịp nuốt",
+          "5-10 cm",
+          "đến mức làm dấu",
+          "đến vạch"
+        ],
+        "clarification_prompt": "Bạn tiếp tục đưa ống xuống dạ dày như thế nào và dừng lại ở đâu?"
+      },
+      {
+        "step_id": 17,
+        "standard_action": "Thử ống bằng phương pháp: Rút dịch dạ dày thử trên giấy đo độ pH (pH <= 5).",
+        "required_keywords": [
+          "thử ống",
+          "rút dịch",
+          "giấy quỳ",
+          "đo pH",
+          "pH <= 5"
+        ],
+        "clarification_prompt": "Làm sao để kiểm tra chắc chắn ống thông đã vào đúng dạ dày?"
+      },
+      {
+        "step_id": 18,
+        "standard_action": "Cố định ống ở mũi hoặc má.",
+        "required_keywords": [
+          "cố định",
+          "ở mũi",
+          "ở má",
+          "băng keo"
+        ],
+        "clarification_prompt": "Khi đã xác định ống vào đúng dạ dày, bạn cần làm gì với phần ống bên ngoài?"
+      },
+      {
+        "step_id": 19,
+        "standard_action": "Thực hiện các bước tiếp theo tùy theo mục đích của đặt ống thông mũi dạ dày: Nuôi ăn, Lấy dịch dạ dày xét nghiệm, Giải áp, Rửa dạ dày.",
+        "required_keywords": [
+          "thực hiện",
+          "mục đích",
+          "nuôi ăn",
+          "rút dịch",
+          "giải áp",
+          "rửa dạ dày"
+        ],
+        "clarification_prompt": "Sau khi cố định ống, bước tiếp theo của bạn là gì?"
+      },
+      {
+        "step_id": 20,
+        "standard_action": "Cố định ống ở đầu giường hoặc trên áo người bệnh ở vị trí cao hơn dạ dày (nếu lưu ống thông lại).",
+        "required_keywords": [
+          "cố định",
+          "đầu giường",
+          "trên áo",
+          "cao hơn dạ dày",
+          "kẹp áo"
+        ],
+        "clarification_prompt": "Nếu cần lưu ống, bạn xử lý phần đuôi ống như thế nào?"
+      },
+      {
+        "step_id": 21,
+        "standard_action": "Chậm khô miệng mũi người bệnh (nếu cần).",
+        "required_keywords": [
+          "lau",
+          "chậm khô",
+          "miệng",
+          "mũi"
+        ],
+        "clarification_prompt": "Nếu bệnh nhân tiết nhiều dịch mũi miệng trong lúc đặt, bạn sẽ làm gì?"
+      },
+      {
+        "step_id": 22,
+        "standard_action": "Tháo găng tay, vệ sinh tay thường qui.",
+        "required_keywords": [
+          "tháo găng",
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Thực hiện xong thủ thuật trên bệnh nhân, bạn xử lý tay mình như thế nào?"
+      },
+      {
+        "step_id": 23,
+        "standard_action": "Báo cho người bệnh biết việc đã xong, cho người bệnh nằm lại tư thế tiện nghi, giữ tư thế đầu cao (nếu cho ăn thì ít nhất là 30 phút sau khi cho ăn).",
+        "required_keywords": [
+          "báo xong",
+          "tư thế tiện nghi",
+          "giữ đầu cao",
+          "30 phút",
+          "sau ăn"
+        ],
+        "clarification_prompt": "Bạn sẽ dặn dò và sắp xếp tư thế bệnh nhân như thế nào sau thủ thuật?"
+      },
+      {
+        "step_id": 24,
+        "standard_action": "Thu dọn dụng cụ, xử lý chất thải lây nhiễm đúng cách.",
+        "required_keywords": [
+          "thu dọn",
+          "dụng cụ",
+          "xử lý rác",
+          "chất thải"
+        ],
+        "clarification_prompt": "Bạn làm gì với mâm dụng cụ và rác thải?"
+      },
+      {
+        "step_id": 25,
+        "standard_action": "Vệ sinh tay thường qui.",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay"
+        ],
+        "clarification_prompt": "Bước cuối cùng về kiểm soát nhiễm khuẩn sau khi dọn dẹp là gì?"
+      },
+      {
+        "step_id": 26,
+        "standard_action": "Ghi hồ sơ",
+        "required_keywords": [
+          "ghi hồ sơ",
+          "ghi bệnh án",
+          "ghi chép"
+        ],
+        "clarification_prompt": "Bạn hoàn tất thủ thuật bằng việc hành chính nào?"
+      }
+    ],
+    "distractor_actions": [
+      "Quên kiểm tra pH dịch vị hoặc chỉ bơm hơi nghe tiếng sục (không còn được khuyến cáo là phương pháp duy nhất).",
+      "Cố đẩy ống khi bệnh nhân ho sặc sụa, tím tái mà không rút ra ngay.",
+      "Đo ống sai cách (chỉ đo từ mũi đến dái tai rồi dừng, hoặc đo từ mũi thẳng xuống rốn).",
+      "Sử dụng dầu vaseline để bôi trơn ống thông dạ dày thay vì chất bôi trơn tan trong nước.",
+      "Đặt bệnh nhân nằm ngửa đầu thấp khi luồn ống."
+    ]
+  },
+  {
+    "id": "khau_trang",
+    "name": "Mang và tháo khẩu trang y tế đúng quy trình",
+    "prompt_context": "Quy trình kiểm soát nhiễm khuẩn, mang và tháo khẩu trang đúng kỹ thuật.",
+    "scenarios": [
+      "Điều dưỡng chuẩn bị vào buồng bệnh cách ly giọt bắn. Yêu cầu thực hiện quy trình mang và tháo khẩu trang đúng kiểm soát nhiễm khuẩn."
+    ],
+    "checklist": [
+      {
+        "step_id": 1,
+        "standard_action": "Vệ sinh tay thường quy trước khi cầm khẩu trang",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay",
+          "sát khuẩn tay"
+        ],
+        "clarification_prompt": "Trước khi chạm vào khẩu trang sạch, bạn cần làm gì trước tiên?"
+      },
+      {
+        "step_id": 2,
+        "standard_action": "Kiểm tra khẩu trang, phân biệt mặt trong/ngoài và nẹp mũi",
+        "required_keywords": [
+          "kiểm tra",
+          "mặt trong",
+          "mặt ngoài",
+          "nẹp mũi",
+          "thanh nẹp"
+        ],
+        "clarification_prompt": "Làm thế nào để phân biệt mặt trong, mặt ngoài và mép trên của khẩu trang?"
+      },
+      {
+        "step_id": 3,
+        "standard_action": "Cầm dây quai đeo vào tai, che kín mũi, miệng và cằm",
+        "required_keywords": [
+          "dây quai",
+          "đeo vào tai",
+          "che kín",
+          "mũi",
+          "miệng",
+          "cằm"
+        ],
+        "clarification_prompt": "Bạn đặt khẩu trang lên mặt và giữ bằng bộ phận nào?"
+      },
+      {
+        "step_id": 4,
+        "standard_action": "Dùng ngón tay miết thanh nẹp nhôm ôm sát sống mũi",
+        "required_keywords": [
+          "miết",
+          "nẹp nhôm",
+          "sống mũi",
+          "ôm sát",
+          "kín"
+        ],
+        "clarification_prompt": "Bạn cố định phần nẹp nhôm trên sống mũi bằng động tác nào?"
+      },
+      {
+        "step_id": 5,
+        "standard_action": "Kéo mép dưới phủ kín cằm và kiểm tra độ kín",
+        "required_keywords": [
+          "kéo",
+          "dưới cằm",
+          "phủ kín",
+          "kiểm tra"
+        ],
+        "clarification_prompt": "Mép dưới của khẩu trang cần phủ đến vị trí nào?"
+      },
+      {
+        "step_id": 6,
+        "standard_action": "Vệ sinh tay trước khi tiến hành tháo khẩu trang",
+        "required_keywords": [
+          "vệ sinh tay",
+          "sát khuẩn tay",
+          "trước khi tháo"
+        ],
+        "clarification_prompt": "Trước khi đưa tay lên tháo khẩu trang bẩn, bước trung gian nào là bắt buộc?"
+      },
+      {
+        "step_id": 7,
+        "standard_action": "Tháo khẩu trang chỉ cầm vào dây quai, không chạm mặt ngoài",
+        "required_keywords": [
+          "dây quai",
+          "tháo",
+          "không chạm",
+          "mặt ngoài",
+          "mặt trước"
+        ],
+        "clarification_prompt": "Kỹ thuật tháo khẩu trang thế nào để tránh tay nhiễm khuẩn từ mặt ngoài?"
+      },
+      {
+        "step_id": 8,
+        "standard_action": "Bỏ khẩu trang vào thùng rác y tế lây nhiễm có nắp đậy",
+        "required_keywords": [
+          "thùng rác",
+          "y tế",
+          "lây nhiễm",
+          "có nắp"
+        ],
+        "clarification_prompt": "Khẩu trang đã qua sử dụng phải bỏ vào thùng rác loại nào?"
+      },
+      {
+        "step_id": 9,
+        "standard_action": "Vệ sinh tay thường quy ngay sau khi bỏ khẩu trang",
+        "required_keywords": [
+          "vệ sinh tay",
+          "rửa tay",
+          "sau khi tháo"
+        ],
+        "clarification_prompt": "Thao tác vệ sinh cuối cùng sau khi bỏ khẩu trang là gì?"
+      }
+    ]
+  }
+]
                 },
                 {
-                    id: "cpr",
-                    title: "4. Hồi sức cấp cứu cơ bản (CPR)",
-                    skills: [
-                        {
-                            id: "bls_cpr",
-                            name: "Hồi sinh tim phổi cơ bản (CPR) người lớn",
-                            prompt_context: "Cấp cứu nạn nhân đột ngột ngừng hô hấp tuần hoàn.",
-                            checklist: [
-                                { step_id: 1, standard_action: "Đánh giá an toàn hiện trường xung quanh nạn nhân", required_keywords: ["an toàn", "hiện trường", "quan sát"], clarification_prompt: "Nguyên tắc đầu tiên trước khi tiếp cận nạn nhân bất tỉnh?" },
-                                { step_id: 2, standard_action: "Kiểm tra đáp ứng: Vỗ vai và gọi to", required_keywords: ["vỗ vai", "gọi to", "bác ơi", "đáp ứng"], clarification_prompt: "Bạn kiểm tra tri giác nạn nhân bằng động tác và lời nói nào?" },
-                                { step_id: 3, standard_action: "Gọi hỗ trợ khẩn cấp: Hô to gọi 115 và lấy máy AED", required_keywords: ["gọi cấp cứu", "115", "aed", "máy sốc điện"], clarification_prompt: "Nạn nhân bất tỉnh, bạn cần hô hoán hỗ trợ điều gì ngay lập tức?" },
-                                { step_id: 4, standard_action: "Bắt mạch cảnh và quan sát nhịp thở đồng thời trong 5-10 giây", required_keywords: ["mạch cảnh", "thở", "5-10 giây"], clarification_prompt: "Bạn kiểm tra mạch và nhịp thở ở đâu, trong bao nhiêu giây?" },
-                                { step_id: 5, standard_action: "Xác nhận ngừng tuần hoàn, đặt tay 1/2 dưới xương ức ép tim ngay", required_keywords: ["1/2 dưới xương ức", "gót bàn tay", "ép tim"], clarification_prompt: "Vị trí và tư thế đặt tay ép tim chuẩn xác trên ngực nạn nhân?" },
-                                { step_id: 6, standard_action: "Ép tim chuẩn: Sâu 5-6 cm, tần số 100-120 l/p, ngực nở hoàn toàn", required_keywords: ["5-6 cm", "100-120", "tần số", "ngực nở hoàn toàn"], clarification_prompt: "Nêu các tiêu chuẩn ép tim chất lượng cao (độ sâu, tần số, độ nở ngực)?" },
-                                { step_id: 7, standard_action: "Khai thông đường thở (ngửa đầu - nâng cằm), thổi ngạt 2 hơi", required_keywords: ["ngửa đầu nâng cằm", "thổi ngạt", "2 hơi"], clarification_prompt: "Thao tác mở đường thở và kỹ thuật thổi ngạt hiệu quả?" },
-                                { step_id: 8, standard_action: "Duy trì chu kỳ 30 ép tim : 2 thổi ngạt và sẵn sàng dùng AED", required_keywords: ["30:2", "chu kỳ", "aed", "liên tục"], clarification_prompt: "Tỷ lệ ép tim : thổi ngạt chuẩn là bao nhiêu?" }
-                            ]
-                        }
-                    ]
+                    "id": "vital_and_exam",
+                    "title": "3. Đo dấu sinh hiệu & Khám thực thể",
+                    "skills": [
+  {
+    "id": "do_huyet_ap",
+    "name": "Đo huyết áp",
+    "scenarios": [
+      "Bệnh nhân nữ, 50 tuổi đến khám định kỳ. Bác sĩ yêu cầu bạn đo huyết áp cánh tay."
+    ],
+    "checklist": [
+      {
+        "step_id": 1,
+        "standard_action": "Chào hỏi, tự giới thiệu, hỏi thông tin bệnh nhân, giải thích lý do đo HA",
+        "required_keywords": [
+          "chào",
+          "giới thiệu",
+          "thông tin",
+          "lý do"
+        ],
+        "clarification_prompt": "Bạn giao tiếp thế nào trước khi đo huyết áp?"
+      },
+      {
+        "step_id": 2,
+        "standard_action": "Hỏi các yếu tố ảnh hưởng (vận động mạnh, uống cafe trong 30p)",
+        "required_keywords": [
+          "yếu tố",
+          "cafe",
+          "vận động"
+        ],
+        "clarification_prompt": "Cần hỏi bệnh nhân có sử dụng gì để loại trừ sai số huyết áp?"
+      },
+      {
+        "step_id": 3,
+        "standard_action": "Cho ngồi tựa lưng, chân để trên sàn, cẳng tay tựa trên bàn, phần giữa cánh tay ngang tim",
+        "required_keywords": [
+          "ngồi tựa",
+          "không vắt chéo",
+          "ngang tim"
+        ],
+        "clarification_prompt": "Tư thế ngồi chuẩn để đo huyết áp là gì?"
+      },
+      {
+        "step_id": 4,
+        "standard_action": "Quấn túi hơi: giữa túi trên ĐM, bờ dưới cách nếp khuỷu 2-3cm",
+        "required_keywords": [
+          "quấn túi hơi",
+          "cách nếp khuỷu",
+          "2-3cm"
+        ],
+        "clarification_prompt": "Cách đặt túi hơi băng quấn như thế nào là đúng?"
+      },
+      {
+        "step_id": 5,
+        "standard_action": "Đo HATT ước lượng: bắt mạch quay, bơm hơi mất mạch quay cộng thêm 30mmHg",
+        "required_keywords": [
+          "bắt mạch quay",
+          "ước lượng",
+          "cộng 30"
+        ],
+        "clarification_prompt": "Làm sao để ước lượng HATT bằng phương pháp bắt mạch?"
+      },
+      {
+        "step_id": 6,
+        "standard_action": "Đặt chuông/màng ống nghe lên ĐM cánh tay, bơm hơi nhanh lên mức HATT ước lượng",
+        "required_keywords": [
+          "ống nghe",
+          "đm cánh tay",
+          "bơm hơi"
+        ],
+        "clarification_prompt": "Bắt đầu nghe tim, bạn đặt ống nghe ở đâu và bơm tới mức nào?"
+      },
+      {
+        "step_id": 7,
+        "standard_action": "Xả hơi đúng vận tốc 2-3 mmHg/giây, xác định HATT và HATTr lần 1",
+        "required_keywords": [
+          "xả hơi",
+          "2-3",
+          "tâm thu",
+          "tâm trương"
+        ],
+        "clarification_prompt": "Bạn vặn xả hơi với tốc độ bao nhiêu và ghi nhận những gì?"
+      },
+      {
+        "step_id": 8,
+        "standard_action": "Đo và đọc kết quả lần 2",
+        "required_keywords": [
+          "lần 2",
+          "đo lại"
+        ],
+        "clarification_prompt": "Bạn có cần đo lại lần 2 không?"
+      },
+      {
+        "step_id": 9,
+        "standard_action": "Nhận định phân loại theo JNC VII, thông báo kết quả, tiện nghi bệnh nhân",
+        "required_keywords": [
+          "phân loại",
+          "thông báo",
+          "cảm ơn"
+        ],
+        "clarification_prompt": "Có kết quả đo rồi, bạn làm gì với con số đó trước mặt bệnh nhân?"
+      }
+    ],
+    "distractor_actions": [
+      "Nhét loa ống nghe sâu dưới mép bao quấn huyết áp.",
+      "Xả hơi bóng quá nhanh (> 5-10 mmHg/giây) dẫn đến đọc sai trị số huyết áp.",
+      "Đo huyết áp ngay khi bệnh nhân vừa vận động mạnh chưa kịp nghỉ ngơi."
+    ],
+    "prompt_context": "Quy trình đo huyết áp cánh tay đúng kỹ thuật theo JNC VII."
+  },
+  {
+    "id": "kham_dau_mat_co",
+    "name": "Khám tổng quát (Đầu, Mặt, Cổ)",
+    "scenarios": [
+      "Bệnh nhân nam, 30 tuổi đến khám tổng quát sức khỏe định kỳ. Yêu cầu thực hiện khám vùng đầu mặt cổ."
+    ],
+    "checklist": [
+      {
+        "step_id": 1,
+        "standard_action": "Chào hỏi, tự giới thiệu, giải thích cho bệnh nhân",
+        "required_keywords": [
+          "chào",
+          "giới thiệu",
+          "giải thích"
+        ],
+        "clarification_prompt": "Mở đầu buổi khám, bạn sẽ nói gì với người bệnh?"
+      },
+      {
+        "step_id": 2,
+        "standard_action": "Đánh giá tình trạng tổng quát: chiều cao, cân nặng, tư thế, dáng đi, nét mặt",
+        "required_keywords": [
+          "tổng trạng",
+          "chiều cao",
+          "cân nặng",
+          "dáng đi"
+        ],
+        "clarification_prompt": "Trước khi khám chi tiết, bạn quan sát những gì toàn thân?"
+      },
+      {
+        "step_id": 3,
+        "standard_action": "Rửa tay và chuẩn bị tư thế khám",
+        "required_keywords": [
+          "rửa tay",
+          "tư thế"
+        ],
+        "clarification_prompt": "Hành động vô khuẩn trước khi chạm vào bệnh nhân là gì?"
+      },
+      {
+        "step_id": 4,
+        "standard_action": "Khám đầu mặt: tóc, hộp sọ, da mặt, nét mặt",
+        "required_keywords": [
+          "tóc",
+          "hộp sọ",
+          "da mặt",
+          "nét mặt"
+        ],
+        "clarification_prompt": "Tại vùng đỉnh đầu và mặt, bạn kiểm tra những yếu tố nào?"
+      },
+      {
+        "step_id": 5,
+        "standard_action": "Khám mắt: củng mạc, kết mạc, phản xạ ánh sáng, chân mày, mí mắt",
+        "required_keywords": [
+          "củng mạc",
+          "kết mạc",
+          "phản xạ ánh sáng"
+        ],
+        "clarification_prompt": "Khám mắt bao gồm kiểm tra những bộ phận và phản xạ nào?"
+      },
+      {
+        "step_id": 6,
+        "standard_action": "Khám tai: vành tai, ống tai và màng nhĩ",
+        "required_keywords": [
+          "vành tai",
+          "ống tai",
+          "màng nhĩ"
+        ],
+        "clarification_prompt": "Bạn quan sát các cấu trúc nào của tai?"
+      },
+      {
+        "step_id": 7,
+        "standard_action": "Khám mũi: khám các cuốn mũi, sờ ấn xoang, đánh giá tắc nghẽn",
+        "required_keywords": [
+          "cuốn mũi",
+          "sờ xoang",
+          "tắc nghẽn"
+        ],
+        "clarification_prompt": "Làm sao để đánh giá mũi và các xoang mặt?"
+      },
+      {
+        "step_id": 8,
+        "standard_action": "Khám họng: niêm mạc, vòm họng, sàn miệng, lưỡi, nướu và răng",
+        "required_keywords": [
+          "niêm mạc",
+          "vòm họng",
+          "lưỡi",
+          "nướu răng"
+        ],
+        "clarification_prompt": "Yêu cầu bệnh nhân há miệng, bạn kiểm tra các cấu trúc nào bên trong?"
+      },
+      {
+        "step_id": 9,
+        "standard_action": "Khám vùng cổ: nhìn, sờ hạch ngoại biên, tuyến giáp, khí quản",
+        "required_keywords": [
+          "hạch",
+          "tuyến giáp",
+          "khí quản"
+        ],
+        "clarification_prompt": "Vùng cổ cần được sờ nắn để kiểm tra các cấu trúc quan trọng nào?"
+      },
+      {
+        "step_id": 10,
+        "standard_action": "Thái độ tôn trọng, chuyên nghiệp, cảm ơn bệnh nhân",
+        "required_keywords": [
+          "tôn trọng",
+          "chuyên nghiệp",
+          "cảm ơn"
+        ],
+        "clarification_prompt": "Kết thúc việc thăm khám, bạn cần thể hiện tác phong gì?"
+      }
+    ],
+    "distractor_actions": [
+      "Khám họng và sờ tuyến giáp khi chưa rửa tay sát khuẩn.",
+      "Ấn quá mạnh vào các điểm xoang mặt khi bệnh nhân đang kêu đau chói."
+    ],
+    "prompt_context": "Khám thực thể tổng quát vùng đầu, mặt, mắt, tai, mũi, họng và cổ."
+  }
+]
+                },
+                {
+                    "id": "firstaid_cpr",
+                    "title": "4. Sơ cứu chấn thương & Hồi sức cấp cứu (CPR)",
+                    "skills": [
+  {
+    "id": "so_cuu_gay_tay",
+    "name": "Sơ cứu gãy cẳng tay",
+    "scenarios": [
+      "Nạn nhân nam, ngã xe máy chống tay xuống đất, gãy hở 1/3 giữa 2 xương cẳng tay. Yêu cầu sơ cứu bất động tại hiện trường."
+    ],
+    "checklist": [
+      {
+        "step_id": 1,
+        "standard_action": "Trấn an nạn nhân, đỡ ngồi thẳng, hướng dẫn tay lành đỡ tay đau",
+        "required_keywords": [
+          "trấn an",
+          "tay lành đỡ tay đau",
+          "ngồi thẳng"
+        ],
+        "clarification_prompt": "Giao tiếp ban đầu và tư thế nạn nhân cần được hướng dẫn ra sao?"
+      },
+      {
+        "step_id": 2,
+        "standard_action": "Chuẩn bị dụng cụ: gạc, băng thun, 2 nẹp gỗ, dây cột, đai tam giác",
+        "required_keywords": [
+          "dụng cụ",
+          "gạc",
+          "băng thun",
+          "2 nẹp",
+          "băng tam giác"
+        ],
+        "clarification_prompt": "Bạn cần chuẩn bị những vật tư sơ cứu gì cho ca này?"
+      },
+      {
+        "step_id": 3,
+        "standard_action": "Mang găng tay hoặc mắt kính bảo vệ",
+        "required_keywords": [
+          "mang găng",
+          "bảo vệ"
+        ],
+        "clarification_prompt": "Do đây là vết thương hở, bạn cần mang gì để bảo vệ mình?"
+      },
+      {
+        "step_id": 4,
+        "standard_action": "Sử dụng gạc sạch đắp che phủ vết thương, băng thun ép (lợp ngói/số 8) cầm máu",
+        "required_keywords": [
+          "đắp gạc",
+          "băng ép",
+          "cầm máu"
+        ],
+        "clarification_prompt": "Xử lý ổ gãy hở chảy máu như thế nào trước khi nẹp?"
+      },
+      {
+        "step_id": 5,
+        "standard_action": "Kiểm tra tưới máu chi sau khi băng (mạch quay hoặc mao mạch)",
+        "required_keywords": [
+          "kiểm tra tưới máu",
+          "mạch quay"
+        ],
+        "clarification_prompt": "Làm sao để biết băng ép không bị quá chặt?"
+      },
+      {
+        "step_id": 6,
+        "standard_action": "Yêu cầu nạn nhân tự đỡ tay, kéo dọc trục nhẹ nhàng, tư thế sấp/trung tính, khuỷu 90 độ",
+        "required_keywords": [
+          "kéo dọc trục",
+          "khuỷu 90",
+          "trung tính"
+        ],
+        "clarification_prompt": "Bạn điều chỉnh tư thế cẳng tay gãy như thế nào trước khi ốp nẹp?"
+      },
+      {
+        "step_id": 7,
+        "standard_action": "Đặt 2 nẹp gỗ (mặt trước và sau), chiều dài từ ngón tay đến quá khuỷu",
+        "required_keywords": [
+          "đặt 2 nẹp",
+          "trước và sau",
+          "quá khuỷu"
+        ],
+        "clarification_prompt": "Vị trí đặt hai thanh nẹp gỗ nằm ở đâu?"
+      },
+      {
+        "step_id": 8,
+        "standard_action": "Cố định bằng 2 nút dây cột (trên và dưới ổ gãy), tì lên nẹp không tì lên da",
+        "required_keywords": [
+          "cố định",
+          "dây cột",
+          "trên và dưới",
+          "tì lên nẹp"
+        ],
+        "clarification_prompt": "Bạn dùng dây buộc nẹp ở vị trí nào so với ổ gãy?"
+      },
+      {
+        "step_id": 9,
+        "standard_action": "Độn lót lòng bàn tay hoặc điểm dễ cấn nẹp",
+        "required_keywords": [
+          "độn lót",
+          "lòng bàn tay",
+          "dễ cấn"
+        ],
+        "clarification_prompt": "Để bệnh nhân êm ái, bạn chèn gòn/gạc vào đâu?"
+      },
+      {
+        "step_id": 10,
+        "standard_action": "Mang đai tam giác treo tay chấn thương vào cổ, bàn tay cao hơn khuỷu",
+        "required_keywords": [
+          "đai tam giác",
+          "treo tay",
+          "cao hơn khuỷu"
+        ],
+        "clarification_prompt": "Dùng dụng cụ gì để treo đỡ toàn bộ cẳng tay sau khi nẹp?"
+      },
+      {
+        "step_id": 11,
+        "standard_action": "Kiểm tra mạch quay lại lần cuối, tác phong chuyên nghiệp",
+        "required_keywords": [
+          "mạch quay",
+          "kiểm tra lại",
+          "chuyên nghiệp"
+        ],
+        "clarification_prompt": "Thao tác y khoa cuối cùng sau khi đã treo tay là gì?"
+      }
+    ],
+    "distractor_actions": [
+      "Cố gắng kéo nắn ổ gãy gập góc cho thẳng trước khi đặt nẹp.",
+      "Buộc nút dây cố định trực tiếp đè lên ổ gãy hở đang chảy máu.",
+      "Quên kiểm tra lại mạch quay sau khi buộc dây cố định nẹp."
+    ],
+    "prompt_context": "Quy trình sơ cứu nẹp bất động gãy hở/kín 2 xương cẳng tay."
+  },
+  {
+    "id": "so_cuu_gay_chan",
+    "name": "Sơ cứu gãy cẳng chân",
+    "scenarios": [
+      "Bệnh nhân bị tai nạn thể thao, gãy hở 1/3 giữa cẳng chân phải. Yêu cầu sơ cứu nẹp cố định."
+    ],
+    "checklist": [
+      {
+        "step_id": 1,
+        "standard_action": "Trấn an, đỡ nạn nhân nằm, hướng dẫn hợp tác",
+        "required_keywords": [
+          "trấn an",
+          "nằm",
+          "hướng dẫn"
+        ],
+        "clarification_prompt": "Bước đầu giao tiếp và tư thế nạn nhân là gì?"
+      },
+      {
+        "step_id": 2,
+        "standard_action": "Mang găng tay, đắp gạc che vết thương hở, băng thun ép cầm máu",
+        "required_keywords": [
+          "mang găng",
+          "đắp gạc",
+          "băng thun ép"
+        ],
+        "clarification_prompt": "Xử lý ổ gãy hở chảy máu bằng cách nào?"
+      },
+      {
+        "step_id": 3,
+        "standard_action": "Kiểm tra tưới máu mạch mu chân sau khi băng",
+        "required_keywords": [
+          "tưới máu",
+          "mạch mu chân"
+        ],
+        "clarification_prompt": "Băng ép xong cần kiểm tra tuần hoàn ở đâu?"
+      },
+      {
+        "step_id": 4,
+        "standard_action": "Chuẩn bị 3 nẹp đủ dài (mông-gót, bẹn-mắt cá, mấu chuyển-mắt cá ngoài), 4 dây cột",
+        "required_keywords": [
+          "3 nẹp",
+          "đủ dài",
+          "4 dây"
+        ],
+        "clarification_prompt": "Cố định cẳng chân cần dùng mấy thanh nẹp và mấy dây?"
+      },
+      {
+        "step_id": 5,
+        "standard_action": "Kéo dọc trục chi liên tục, bệnh nhân chống chân lành nhấc mông để đặt nẹp",
+        "required_keywords": [
+          "kéo dọc trục",
+          "nhấc mông",
+          "chống chân"
+        ],
+        "clarification_prompt": "Làm sao để đưa nẹp ra phía sau lưng/mông bệnh nhân dễ dàng?"
+      },
+      {
+        "step_id": 6,
+        "standard_action": "Đặt nẹp gỗ phía sau (mông đến gót) và 2 nẹp ngoài, trong",
+        "required_keywords": [
+          "nẹp phía sau",
+          "hai bên",
+          "ngoài trong"
+        ],
+        "clarification_prompt": "Vị trí đặt 3 thanh nẹp như thế nào?"
+      },
+      {
+        "step_id": 7,
+        "standard_action": "Cố định 4 nút: 2 trên, 2 dưới ổ gãy (cẳng chân, đùi)",
+        "required_keywords": [
+          "cố định 4 nút",
+          "trên dưới",
+          "ổ gãy"
+        ],
+        "clarification_prompt": "Vị trí buộc 4 sợi dây cố định nẹp nằm ở đâu?"
+      },
+      {
+        "step_id": 8,
+        "standard_action": "Độn lót gót, mắt cá, lồi cầu, bẹn, mấu chuyển",
+        "required_keywords": [
+          "độn lót",
+          "gót",
+          "mắt cá",
+          "bẹn"
+        ],
+        "clarification_prompt": "Bạn cần chèn gòn/gạc vào các vùng đầu xương nhô ra nào?"
+      },
+      {
+        "step_id": 9,
+        "standard_action": "Băng số 8 cố định cổ chân",
+        "required_keywords": [
+          "băng số 8",
+          "cố định cổ chân"
+        ],
+        "clarification_prompt": "Cố định bàn chân vuông góc với cẳng chân bằng cách nào?"
+      },
+      {
+        "step_id": 10,
+        "standard_action": "Sờ lại mạch mu chân kiểm tra tuần hoàn",
+        "required_keywords": [
+          "mạch mu chân",
+          "kiểm tra"
+        ],
+        "clarification_prompt": "Buộc dây xong phải làm gì để đảm bảo chân không bị hoại tử do chèn ép?"
+      }
+    ],
+    "distractor_actions": [
+      "Buộc dây cố định nẹp đè trực tiếp lên vị trí xương gãy gồ lên.",
+      "Không độn lót vùng mắt cá và gót chân gây cấn đau và hoại tử tì đè.",
+      "Chỉ dùng 1 thanh nẹp ngắn không qua được khớp gối và khớp cổ chân."
+    ],
+    "prompt_context": "Quy trình sơ cứu nẹp 3 thanh gỗ bất động gãy cẳng chân."
+  },
+  {
+    "id": "cpr",
+    "name": "Hồi sức cấp cứu cơ bản (CPR có AED)",
+    "scenarios": [
+      "Một người đang đi bộ trong công viên thì ngã gục, bất tỉnh. Bạn có mặt tại hiện trường cùng túi cấp cứu và máy AED. Hãy cấp cứu."
+    ],
+    "checklist": [
+      {
+        "step_id": 1,
+        "standard_action": "Kiểm tra môi trường xung quanh có nguy hiểm không",
+        "required_keywords": [
+          "môi trường",
+          "nguy hiểm",
+          "an toàn"
+        ],
+        "clarification_prompt": "Bước đầu tiên khi tiếp cận hiện trường để bảo vệ bản thân là gì?"
+      },
+      {
+        "step_id": 2,
+        "standard_action": "Kiểm tra tri giác bệnh nhân (gọi/lay)",
+        "required_keywords": [
+          "tri giác",
+          "gọi",
+          "lay"
+        ],
+        "clarification_prompt": "Làm sao để biết nạn nhân còn tỉnh hay không?"
+      },
+      {
+        "step_id": 3,
+        "standard_action": "Kêu gọi người xung quanh giúp đỡ, gọi cấp cứu",
+        "required_keywords": [
+          "giúp đỡ",
+          "gọi cấp cứu",
+          "115"
+        ],
+        "clarification_prompt": "Sau khi xác định nạn nhân bất tỉnh, bạn làm gì ngay lập tức?"
+      },
+      {
+        "step_id": 4,
+        "standard_action": "Làm thông đường thở (Ngửa đầu nâng cằm)",
+        "required_keywords": [
+          "thông đường thở",
+          "ngửa đầu",
+          "nâng cằm"
+        ],
+        "clarification_prompt": "Kỹ thuật nào giúp mở đường thở cho bệnh nhân?"
+      },
+      {
+        "step_id": 5,
+        "standard_action": "Kiểm tra hô hấp tối thiểu 5s không quá 10s",
+        "required_keywords": [
+          "kiểm tra hô hấp",
+          "5 giây",
+          "10 giây"
+        ],
+        "clarification_prompt": "Bạn kiểm tra bệnh nhân có thở không trong bao lâu?"
+      },
+      {
+        "step_id": 6,
+        "standard_action": "Bắt mạch cảnh 1 bên không quá 10 giây",
+        "required_keywords": [
+          "mạch cảnh",
+          "10 giây"
+        ],
+        "clarification_prompt": "Đánh giá tuần hoàn bằng cách bắt mạch ở đâu?"
+      },
+      {
+        "step_id": 7,
+        "standard_action": "Xác định vị trí ấn tim, đặt 2 bàn tay đan nhau đúng vị trí",
+        "required_keywords": [
+          "vị trí ấn tim",
+          "đan tay",
+          "xương ức"
+        ],
+        "clarification_prompt": "Bạn đặt tay ở đâu và như thế nào để ép tim?"
+      },
+      {
+        "step_id": 8,
+        "standard_action": "Thẳng trục vai-khuỷu-cườm tay và vuông góc ngực",
+        "required_keywords": [
+          "thẳng trục",
+          "vuông góc",
+          "vai khuỷu"
+        ],
+        "clarification_prompt": "Tư thế cơ thể bạn thế nào khi ép tim?"
+      },
+      {
+        "step_id": 9,
+        "standard_action": "Tần số 100-120 lần/phút, sâu 5cm",
+        "required_keywords": [
+          "100-120",
+          "sâu 5cm"
+        ],
+        "clarification_prompt": "Tốc độ và độ sâu ép tim chuẩn là bao nhiêu?"
+      },
+      {
+        "step_id": 10,
+        "standard_action": "Lồng ngực nở lại hoàn toàn, ấn đủ 30 lần không gián đoạn",
+        "required_keywords": [
+          "nở lại hoàn toàn",
+          "30 lần"
+        ],
+        "clarification_prompt": "Giữa các nhịp ép bạn chú ý điều gì và ép bao nhiêu nhịp?"
+      },
+      {
+        "step_id": 11,
+        "standard_action": "Bật máy AED và mở nắp",
+        "required_keywords": [
+          "bật máy aed",
+          "mở nắp"
+        ],
+        "clarification_prompt": "Khi có AED, việc đầu tiên làm với máy là gì?"
+      },
+      {
+        "step_id": 12,
+        "standard_action": "Đặt điện cực đúng vị trí lên ngực",
+        "required_keywords": [
+          "đặt điện cực",
+          "dán miếng",
+          "lên ngực"
+        ],
+        "clarification_prompt": "Miếng dán AED được đặt ở đâu?"
+      },
+      {
+        "step_id": 13,
+        "standard_action": "Không chạm vào bệnh nhân khi máy phân tích và khi ấn nút sốc",
+        "required_keywords": [
+          "không chạm",
+          "tránh ra",
+          "sốc"
+        ],
+        "clarification_prompt": "Nguyên tắc an toàn lúc máy phân tích nhịp và phát sốc là gì?"
+      },
+      {
+        "step_id": 14,
+        "standard_action": "Quay lại nhấn ngực ngay",
+        "required_keywords": [
+          "nhấn ngực",
+          "ép tim ngay"
+        ],
+        "clarification_prompt": "Sốc điện xong bạn làm gì tiếp theo?"
+      },
+      {
+        "step_id": 15,
+        "standard_action": "Đặt airway phù hợp",
+        "required_keywords": [
+          "đặt airway",
+          "phù hợp"
+        ],
+        "clarification_prompt": "Trước khi bóp bóng, bạn dùng dụng cụ gì để chống tụt lưỡi?"
+      },
+      {
+        "step_id": 16,
+        "standard_action": "Đặt mask đúng, cầm chữ C-E và ngửa đầu",
+        "required_keywords": [
+          "đặt mask",
+          "cầm chữ c-e",
+          "ngửa đầu"
+        ],
+        "clarification_prompt": "Kỹ thuật cầm mặt nạ bóp bóng được gọi là gì?"
+      },
+      {
+        "step_id": 17,
+        "standard_action": "Phối hợp ấn tim bóp bóng tỉ lệ 30:2, đánh giá lại sau 2 phút",
+        "required_keywords": [
+          "30:2",
+          "đánh giá lại",
+          "2 phút"
+        ],
+        "clarification_prompt": "Chu kỳ phối hợp ép tim/thổi ngạt và thời gian đánh giá lại là bao nhiêu?"
+      }
+    ],
+    "distractor_actions": [
+      "Chạm vào nạn nhân trong lúc máy AED đang phân tích nhịp tim hoặc đang phát sốc điện.",
+      "Dừng ép tim quá 10 giây giữa các chu kỳ làm giảm áp lực tưới máu mạch vành.",
+      "Ép tim quá nông (< 4cm) hoặc không để lồng ngực nở lại hoàn toàn giữa các nhịp ép."
+    ],
+    "prompt_context": "Hồi sinh tim phổi cơ bản (CPR) người lớn có sử dụng máy khử rung tự động AED."
+  }
+]
                 }
             ]
         };
@@ -679,14 +2376,14 @@
                         <div>
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-xs font-semibold px-2 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-100">
-                                    ${skill.base_checklist ? 'Checklist thích ứng dạng thuốc' : `${(skill.checklist || []).length} bước bảng kiểm`}
+                                    ${skill.id.startsWith('tiem_') && skill.id !== 'tiem_truyen_tinh_mach' ? '22-25 bước (Y lệnh động)' : `${(skill.checklist || []).length} bước bảng kiểm`}
                                 </span>
                                 <span class="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded font-bold border border-amber-200">
                                     <i class="fa-solid fa-wand-magic-sparkles"></i> AI Scenario
                                 </span>
                             </div>
                             <h4 class="font-bold text-slate-900 group-hover:text-teal-700 transition">${skill.name}</h4>
-                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">${skill.prompt_context}</p>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">${skill.prompt_context || (skill.scenarios ? skill.scenarios[0] : '')}</p>
                         </div>
                         <button type="button" onclick="startPractice('${cat.id}', '${skill.id}')" class="mt-4 w-full bg-white group-hover:bg-teal-600 group-hover:text-white border border-slate-300 group-hover:border-teal-600 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition text-center shadow-2xs cursor-pointer">
                             <i class="fa-solid fa-play mr-1"></i> Bắt đầu thi trạm
@@ -707,45 +2404,37 @@
         }
 
         function buildDynamicInjectionChecklist(skill, medOrder) {
-            if (!skill.base_checklist) {
+            if (!skill.id.startsWith("tiem_") || skill.id === "tiem_truyen_tinh_mach") {
                 return skill.checklist || [];
             }
 
-            const base = JSON.parse(JSON.stringify(skill.base_checklist));
-            let prepSteps = [];
-
-            if (medOrder && medOrder.form_type === "ampoule") {
-                prepSteps = [
-                    { step_id: 3, standard_action: "Kiểm tra tên thuốc, hạn dùng, độ trong; gõ nhẹ đầu ống đuổi thuốc xuống thân ống", required_keywords: ["kiểm tra thuốc", "hạn dùng", "gõ nhẹ", "đuổi thuốc xuống", "ống thuốc"], clarification_prompt: "Trước khi bẻ ống thuốc, bạn kiểm tra những gì và làm động tác gì để thuốc không đọng ở cổ ống?" },
-                    { step_id: 4, standard_action: "Sát khuẩn cổ ống thuốc, dùng miếng gạc lót bẻ cổ ống thuốc an toàn", required_keywords: ["sát khuẩn cổ ống", "miếng gạc", "lót gạc", "bẻ cổ ống", "bẻ ống"], clarification_prompt: "Bạn bẻ ống thuốc như thế nào để đảm bảo vô khuẩn và không đứt tay?" },
-                    { step_id: 5, standard_action: "Đưa kim vào ống thuốc rút đúng liều lượng chỉ định (ngửa mặt vát, không chạm mép cắt ống)", required_keywords: ["rút thuốc", "đúng liều", "ngửa vát", "không chạm mép", "rút vào bơm"], clarification_prompt: "Thao tác đưa kim vào ống rút thuốc như thế nào để tránh nhiễm khuẩn?" }
-                ];
-            } else if (medOrder && medOrder.form_type === "powder_vial") {
-                prepSteps = [
-                    { step_id: 3, standard_action: "Mở nắp bảo vệ, sát khuẩn nút cao su lọ thuốc bột và ống dung môi/nước cất", required_keywords: ["mở nắp", "sát khuẩn nút cao su", "nút cao su", "ống dung môi", "nước cất"], clarification_prompt: "Trước khi cắm kim vào lọ thuốc bột, bạn cần sát khuẩn vị trí nào?" },
-                    { step_id: 4, standard_action: "Bẻ ống dung môi, rút đủ thể tích dung môi và bơm từ từ vào lọ thuốc bột", required_keywords: ["rút dung môi", "bơm vào lọ", "dung môi", "nước cất"], clarification_prompt: "Bạn lấy dung môi và đưa vào lọ bột như thế nào?" },
-                    { step_id: 5, standard_action: "Lắc nhẹ/xoay tròn lọ thuốc cho bột tan hoàn toàn, sau đó dốc ngược lọ rút đúng liều thuốc đã pha", required_keywords: ["lắc tan", "tan hoàn toàn", "dốc ngược", "rút thuốc", "rút đủ liều"], clarification_prompt: "Làm thế nào để thuốc tan đều và cách rút thuốc sau khi hòa tan?" }
-                ];
-            } else if (medOrder && medOrder.form_type === "liquid_vial") {
-                prepSteps = [
-                    { step_id: 3, standard_action: "Lăn nhẹ lọ thuốc trong lòng bàn tay (nếu là hỗn dịch), sát khuẩn nút cao su lọ thuốc", required_keywords: ["lăn nhẹ", "sát khuẩn nút cao su", "nút cao su", "lọ thuốc"], clarification_prompt: "Thao tác chuẩn bị lọ thuốc và sát khuẩn nút cao su?" },
-                    { step_id: 4, standard_action: "Bơm một lượng không khí bằng thể tích thuốc cần lấy vào trong lọ thuốc", required_keywords: ["bơm khí", "lượng khí", "bằng thể tích", "bơm không khí"], clarification_prompt: "Tại sao cần bơm một lượng không khí tương đương vào lọ trước khi rút thuốc dung dịch?" },
-                    { step_id: 5, standard_action: "Dốc ngược lọ thuốc, rút chính xác liều lượng thuốc theo y lệnh", required_keywords: ["dốc ngược", "rút thuốc", "chính xác liều", "đúng liều"], clarification_prompt: "Tư thế lọ thuốc khi rút dung dịch thuốc ra bơm tiêm?" }
-                ];
+            const originalSteps = skill.checklist || [];
+            const formType = medOrder ? medOrder.form_type : "ampoule";
+            const stepsToInsert = withdrawal_steps[formType] || [];
+            
+            const newSteps = [];
+            for (const step of originalSteps) {
+                newSteps.push({
+                    standard_action: step.standard_action,
+                    required_keywords: step.required_keywords,
+                    clarification_prompt: step.clarification_prompt
+                });
+                if (step.step_id === 6 && stepsToInsert.length > 0) {
+                    for (const s of stepsToInsert) {
+                        newSteps.push({
+                            standard_action: s.standard_action,
+                            required_keywords: s.required_keywords,
+                            clarification_prompt: s.clarification_prompt
+                        });
+                    }
+                }
             }
 
-            const finalChecklist = [
-                base[0],
-                base[1],
-                ...prepSteps,
-                ...base.slice(2)
-            ];
-
-            finalChecklist.forEach((step, index) => {
-                step.step_id = index + 1;
+            newSteps.forEach((s, idx) => {
+                s.step_id = idx + 1;
             });
 
-            return finalChecklist;
+            return newSteps;
         }
 
         async function generatePatientAndScenario(skill) {
@@ -822,9 +2511,7 @@ Trả về JSON duy nhất.`;
                 firstWords = `Chào điều dưỡng, hôm nay tiêm thuốc ${currentMedicationOrder.drug_name} cho tôi phải không? Thuốc này tiêm có đau lắm không điều dưỡng?`;
             } else if (skill.id === "cat_chi_vet_khau") {
                 const sampleScenarios = skill.scenarios || [
-                    "Bệnh nhân nam, 45 tuổi, mổ nội soi cắt ruột thừa ngày thứ 7. Vết mổ khô, lành tốt, không sưng đỏ. Bác sĩ chỉ định cắt chỉ vết khâu.",
-                    "Bệnh nhân nữ, 30 tuổi, khâu vết thương rách da cẳng chân ngày thứ 10. Bác sĩ chỉ định cắt chỉ.",
-                    "Bệnh nhân nam, 60 tuổi, mổ thoát vị bẹn ngày thứ 8. Bác sĩ chỉ định cắt chỉ ngắt quãng."
+                    "Bệnh nhân nam, 45 tuổi, mổ nội soi cắt ruột thừa ngày thứ 7. Vết mổ khô, lành tốt, không sưng đỏ. Bác sĩ chỉ định cắt chỉ vết khâu."
                 ];
                 scenarioText = sampleScenarios[Math.floor(Math.random() * sampleScenarios.length)];
                 firstWords = `Chào bác sĩ, hôm nay tôi được cắt chỉ vết mổ phải không ạ? Nhìn mấy mối chỉ cũng khô ráo rồi nhưng hơi lo bị nhói, bác sĩ làm nhẹ tay giúp tôi nhé...`;
@@ -834,7 +2521,19 @@ Trả về JSON duy nhất.`;
             } else if (skill.id === "dat_thong_mui_da_day") {
                 scenarioText = `Bệnh nhân có chỉ định đặt ống thông mũi - dạ dày dẫn lưu theo dõi.`;
                 firstWords = `Chào bác sĩ, tôi nghe nói phải luồn ống từ mũi xuống bao tử hả bác sĩ? Nghe sợ quá...`;
-            } else if (skill.id === "bls_cpr") {
+            } else if (skill.id === "kham_dau_mat_co") {
+                scenarioText = `Bệnh nhân đến khám sức khỏe định kỳ. Yêu cầu thực hiện khám tổng quát vùng đầu mặt cổ.`;
+                firstWords = `Chào bác sĩ, hôm nay tôi đến khám tổng quát vùng đầu mặt cổ ạ.`;
+            } else if (skill.id === "so_cuu_gay_tay") {
+                scenarioText = `Nạn nhân ngã xe máy chống tay xuống đường, gãy hở 1/3 giữa 2 xương cẳng tay. Yêu cầu sơ cứu nẹp cố định.`;
+                firstWords = `Đau buốt quá bác sĩ ơi! Tay tôi bị gãy chảy máu rồi, nhờ bác sĩ nẹp cố định giúp tôi với...`;
+            } else if (skill.id === "so_cuu_gay_chan") {
+                scenarioText = `Bệnh nhân bị tai nạn thể thao, gãy cẳng chân phải đau đớn dữ dội.`;
+                firstWords = `Trời ơi đau quá bác sĩ ơi! Chân tôi không cử động được nữa rồi...`;
+            } else if (skill.id === "do_huyet_ap") {
+                scenarioText = `Bệnh nhân đến khám định kỳ, đã ngồi nghỉ ngơi tại phòng khám 10 phút. Bác sĩ yêu cầu đo huyết áp.`;
+                firstWords = `Chào bác sĩ, tôi đã ngồi nghỉ 10 phút rồi, nhờ bác sĩ đo huyết áp kiểm tra giúp tôi ạ.`;
+            } else if (skill.id === "cpr" || skill.id === "bls_cpr") {
                 scenarioText = `Nạn nhân đột ngột bất tỉnh trên sàn gạch hành lang bệnh viện, ngừng thở ngừng tim.`;
                 firstWords = `(Nạn nhân nằm bất tỉnh, không cử động, mắt nhắm nghiền)`;
             } else {
@@ -1184,6 +2883,16 @@ Trả về JSON duy nhất:
                 } else if (lower.includes("báo xong") || lower.includes("rút hết") || lower.includes("xong rồi")) {
                     patientReply = `Dạ rút hết chỉ ra thấy nhẹ nhõm hẳn, không còn cảm giác vướng cộm da nữa rồi, cảm ơn bác sĩ nhiều!`;
                 }
+            } else if (currentSkill && (currentSkill.id === "so_cuu_gay_tay" || currentSkill.id === "so_cuu_gay_chan")) {
+                if (lower.includes("trấn an") || lower.includes("đỡ") || lower.includes("nẹp") || lower.includes("băng")) {
+                    patientReply = `Dạ đau buốt quá bác sĩ ơi, nhờ bác sĩ nẹp cẩn thận giúp tôi với ạ...`;
+                }
+            } else if (currentSkill && currentSkill.id === "kham_dau_mat_co") {
+                if (lower.includes("há miệng") || lower.includes("lưỡi") || lower.includes("họng")) {
+                    patientReply = `Aaaaa...`;
+                } else if (lower.includes("xoang") || lower.includes("ấn")) {
+                    patientReply = `Dạ chỗ đó ấn vào hơi tức tức ạ.`;
+                }
             } else if (lower.includes("tiêm") || lower.includes("đâm kim")) {
                 patientReply = `Ái chà hơi nhói và buốt một chút bác sĩ ơi...`;
             }
@@ -1195,7 +2904,9 @@ Trả về JSON duy nhất:
                 { pattern: /không tháo garo|chưa tháo garô|giữ nguyên garo/i, reason: "Bơm thuốc tĩnh mạch khi chưa giải phóng garô." },
                 { pattern: /thấy máu.*bơm luôn|có máu.*vẫn bơm/i, reason: "Thấy máu trào vào bơm tiêm khi tiêm bắp nhưng vẫn tiếp tục bơm thuốc." },
                 { pattern: /day nốt sẩn|ấn mạnh nốt sẩn/i, reason: "Day ấn bông cồn vào nốt sẩn tiêm trong da làm sai lệch kết quả đọc test." },
-                { pattern: /kềm vô khuẩn.*(gỡ băng|tháo băng|băng bẩn)/i, reason: "Dùng kềm vô khuẩn trong mâm để tháo băng bẩn làm nhiễm bẩn kềm và mâm." }
+                { pattern: /kềm vô khuẩn.*(gỡ băng|tháo băng|băng bẩn)/i, reason: "Dùng kềm vô khuẩn trong mâm để tháo băng bẩn làm nhiễm bẩn kềm và mâm." },
+                { pattern: /chạm vào.*(sốc|phân tích)|không tránh ra/i, reason: "Chạm vào nạn nhân trong lúc máy AED đang phân tích hoặc phát sốc điện." },
+                { pattern: /nắn thẳng xương|kéo giật mạnh/i, reason: "Cố gắng nắn chỉnh thô bạo đầu xương gãy hở gây tổn thương mạch máu thần kinh." }
             ];
 
             for (const item of dangerousPatterns) {
